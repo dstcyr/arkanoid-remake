@@ -1,0 +1,3 @@
+[submodule "cengine"]
+	path = cengine
+	url = https://github.com/dstcyr/cengine.git
