@@ -3,6 +3,7 @@
 #include "Grid.h"
 #include "Log.h"
 #include "MathUtils.h"
+#include "Collision.h"
 
 Ball::Ball()
 {
@@ -171,6 +172,52 @@ bool Ball::CheckBallCollisionWithGrid(Grid& grid, float px, float py)
         bool top = (worldY + grid.GetCellHeight() > m_transform.y);
         bool right = (worldX <= m_transform.x + m_transform.w);
         bool left = (worldX + grid.GetCellWidth() > m_transform.x);
+
+        // TODO (REVIEW) : optimize boolean expression
+        // TODO (REVIEW) : see CheckCollisionWithRect... 
+        // 
+        // The ball hits the top of a block
+        if (top && !bottom)
+        {
+            m_velocity.y = -m_velocity.y;
+        }
+
+        // The ball hits the bottom of a block
+        if (bottom && !top)
+        {
+            m_velocity.y = -m_velocity.y;
+        }
+
+        // The ball hits a block from the left
+        if (left && !right)
+        {
+            m_velocity.x = -m_velocity.x;
+        }
+
+        // The ball hits a block from the right
+        if (right && !left)
+        {
+            m_velocity.x = -m_velocity.x;
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+bool Ball::CheckCollisionWithRect(const Rect<float>& rect)
+{
+    int hitIndex = 0;
+    if(Engine::CheckRects(m_transform, rect))
+    {
+        float centerX = m_transform.x + (m_transform.w / 2.0f);
+        float centerY = m_transform.y + (m_transform.h / 2.0f);
+
+        bool top = centerY < rect.y;
+        bool bottom = centerY > rect.y + rect.h;
+        bool left = centerX < rect.x;
+        bool right = centerX > rect.x + rect.w;
 
         // TODO (REVIEW) : optimize boolean expression
         // 

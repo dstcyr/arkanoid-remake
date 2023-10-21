@@ -226,10 +226,7 @@ void Game::OnUpdate(float dt)
 #if !DEBRIS_IMMUNE_FROM_BALL
                 for (Ball* ball : m_activeBalls)
                 {
-                    Rect<float> ballTransform;
-                    ball->GetTransform(&ballTransform);
-
-                    if (Engine::CheckRects(debrisTransform, ballTransform))
+                    if (ball->CheckCollisionWithRect(debrisTransform))
                     {
                         it = m_activeDebris.erase(it);
                         deleted = true;

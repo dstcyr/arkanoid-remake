@@ -29,6 +29,7 @@ public:
     void SetSpeed(float speed);
     void ChangeDirection(int h, int v);
     void SetPosition(float x, float y);
+    bool CheckCollisionWithRect(const Rect<float>& rect);
 
     CDelegate OnBlockDestroyed;
     CDelegate OnBottomReached;

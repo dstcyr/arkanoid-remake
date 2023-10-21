@@ -179,7 +179,7 @@ void Grid::Load(int level)
                                 AnimatedTile* animTile = new AnimatedTile();
 
                                 int round = level + 1;
-                                animTile->Init("Assets/Images/silver.png", 6, BLOCK_WIDTH, BLOCK_HEIGHT);
+                                animTile->Init("Assets/Images/silver.png", 7, BLOCK_WIDTH, BLOCK_HEIGHT);
                                 animTile->type = tileNum;
                                 animTile->hit = static_cast<int>(std::floor((round - 1) / 8) + 2);
                                 animTile->score = 50 * round;
@@ -190,7 +190,7 @@ void Grid::Load(int level)
                                 // Gold walls are indestructible.
                                 AnimatedTile* animTile = new AnimatedTile();
 
-                                animTile->Init("Assets/Images/gold.png", 6, BLOCK_WIDTH, BLOCK_HEIGHT);
+                                animTile->Init("Assets/Images/gold.png", 7, BLOCK_WIDTH, BLOCK_HEIGHT);
                                 animTile->type = tileNum;
                                 animTile->hit = 100;
                                 animTile->score = 0;
@@ -494,7 +494,7 @@ void AnimatedTile::Init(const std::string& filename, int frameInRows, int frameW
 {
     anim.Init(filename, frameInRows, frameWidth, frameHeight);
     anim.AddClip("idle", 0, 1, 0.0f);
-    anim.AddClip("flash", 0, 6, 0.03f);
+    anim.AddClip("flash", 0, 7, 0.03f);
     anim.Play("idle", false);
 }
 
