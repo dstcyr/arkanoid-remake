@@ -22,6 +22,8 @@ const float CAPSULE_FALLING_SPEED = 100.0f;
 const float LASER_WIDTH = 14;
 const float LASER_HEIGHT = 14;
 const float LASER_SPEED = 800.0f;
+const float BALL_START_X = 400.0f;
+const float BALL_START_Y = 650.0f;
 
 #if defined(_DEBUG)
 
@@ -52,6 +54,7 @@ const float LASER_SPEED = 800.0f;
 #define ALWAYS_SPAWN_LASER 1
 #define ALWAYS_SPAWN_WARP 0
 #define START_AT_ROUND 1
+#define STARTING_LIFE 25
 #define INVINSIBLE 1
 #define CAN_DESTROY_GOLD 0
 #define DRAW_DEBRIS_DEBUG 0

@@ -8,10 +8,14 @@ Debris::Debris(int type)
 {
     m_type = type;
     m_animSpeed = 0.1f;
+    m_movementPhase = 0;
+    m_movementTime = 0.0f;
 }
 
 void Debris::Initialize()
 {
+    m_movementPhase = 0;
+    m_movementTime = 0.0f;
     m_transform.x = 0.0f;
     m_transform.y = 0.0f;
     m_transform.w = 60.0f;
@@ -50,16 +54,13 @@ void Debris::Update(float dt, const Rect<float>& bounds, const Grid& grid, const
 {
     m_anim.Update(dt);
 
-    static int movementPhase = 0;
-    static float movementTime = 0.0f;
-
     // ENTRANCE
-    if (movementPhase == 0)
+    if (m_movementPhase == 0)
     {
-        movementTime += dt;
-        if (movementTime >= 0.3f)
+        m_movementTime += dt;
+        if (m_movementTime >= 0.3f)
         {
-            movementPhase++;
+            m_movementPhase++;
         }
         else
         {
@@ -68,7 +69,7 @@ void Debris::Update(float dt, const Rect<float>& bounds, const Grid& grid, const
         }
     }
     // MOVEMENT
-    else if (movementPhase == 1)
+    else if (m_movementPhase == 1)
     {
         int id;
         float pY = m_transform.y;
@@ -97,11 +98,11 @@ void Debris::Update(float dt, const Rect<float>& bounds, const Grid& grid, const
 
         if (m_transform.y > CIRCLE_LIMIT_Y)
         {
-            movementPhase++;
+            m_movementPhase++;
         }
     }
     // CIRCLE
-    else if (movementPhase == 2)
+    else if (m_movementPhase == 2)
     {
         m_velocity.Rotate(0.01f);
 

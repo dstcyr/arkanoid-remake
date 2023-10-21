@@ -1,8 +1,8 @@
 #include "SaveGame.h"
 #include "Config.h"
 
-int SaveGame::highScore = 1000;
-int SaveGame::life = 2;
+int SaveGame::highScore = 50000;
+int SaveGame::life = STARTING_LIFE;
 int SaveGame::round = START_AT_ROUND;
 int SaveGame::score = 0;
 
@@ -28,7 +28,7 @@ void SaveGame::Save()
 
 void SaveGame::Load()
 {
-    life = 2;
+    life = STARTING_LIFE;
     round = START_AT_ROUND;
     score = 0;
 
@@ -40,7 +40,7 @@ void SaveGame::Load()
     }
     else
     {
-        highScore = 1000;
+        highScore = 50000;
     }
 }
 

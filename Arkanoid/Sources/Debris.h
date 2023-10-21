@@ -24,4 +24,6 @@ private:
     Animation m_anim;
     Rect<float> m_transform;
     Vec2D m_velocity;
+    int m_movementPhase;
+    float m_movementTime;
 };

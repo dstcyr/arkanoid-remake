@@ -20,7 +20,7 @@ public:
     void OnRender() override;
     void OnExit() override;
 
-    Ball* AddBall();
+    Ball* AddBall(float x, float y);
     void SetGameSpeed(float speed);
     float GetGameSpeed() const;
     void AddVaus();
@@ -32,6 +32,8 @@ public:
     void ActivateCatch(bool activate);
     void OpenTheWarpDoors();
     void CloseTheWarpDoors();
+
+    bool GetCurrentBallPosition(float* x, float* y);
 
 private:
     size_t m_whiteFont;

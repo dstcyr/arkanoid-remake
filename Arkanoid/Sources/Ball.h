@@ -20,6 +20,7 @@ class Ball
 {
 public:
     Ball();
+    Ball(float x, float y);
     void Initialize();
     void Update(float dt, const Rect<float>& bounds, Grid& grid);
     void Render();

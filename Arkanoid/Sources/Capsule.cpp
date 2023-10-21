@@ -5,6 +5,10 @@
 #include <cstdlib>
 #include "Game.h"
 
+// Capsule can spawn only one at a time
+// No capsule spawns when there are multiple balls
+
+
 Capsule::Capsule() : Capsule(0.0f, 0.0f)
 {
     m_transform = Rect<float>();
@@ -290,16 +294,21 @@ std::string DisruptCapsule::ToString()
 void DisruptCapsule::Activate(Game* game)
 {
     CHECK(game);
-    float speed = game->GetGameSpeed();
-    Ball* ball1 = game->AddBall();
-    ball1->SetSpeed(speed);
-    ball1->SetAngle(SHARP_ANGLE);
-    ball1->ChangeDirection(1, -1);
 
-    Ball* ball2 = game->AddBall();
-    ball2->SetSpeed(speed);
-    ball2->SetAngle(SHARP_ANGLE);
-    ball2->ChangeDirection(-1, -1);
+    float x, y;
+    if (game->GetCurrentBallPosition(&x, &y))
+    {
+        float speed = game->GetGameSpeed();
+        Ball* ball1 = game->AddBall(x, y);
+        ball1->SetSpeed(speed);
+        ball1->SetAngle(SHARP_ANGLE);
+        ball1->ChangeDirection(1, -1);
+
+        Ball* ball2 = game->AddBall(x, y);
+        ball2->SetSpeed(speed);
+        ball2->SetAngle(SHARP_ANGLE);
+        ball2->ChangeDirection(-1, -1);
+    }
 }
 
 void DisruptCapsule::Init()

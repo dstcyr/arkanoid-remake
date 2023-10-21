@@ -5,9 +5,13 @@
 #include "MathUtils.h"
 #include "Collision.h"
 
-Ball::Ball()
+Ball::Ball() : Ball(400.0f, 650.0f)
 {
-    m_transform = Rect<float>(400.0f, 650.0f, 16.0f, 16.0f);
+}
+
+Ball::Ball(float x, float y)
+{
+    m_transform = Rect<float>(x, y, 16.0f, 16.0f);
     m_velocity = Vec2D(0.0f, 0.0f);
     m_ballTexture = 0;
     m_brickHitSound = 0;

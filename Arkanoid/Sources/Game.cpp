@@ -100,41 +100,13 @@ void Game::OnEnter()
     m_paddle.OnExitLevelDelegate.Bind(this, &Game::OnExitLevel);
     m_warpDoorOpen = false;
 
-    m_activePower = nullptr;
-
-    for (Capsule* c : m_activeCapsules)
-    {
-        delete c;
-    }
-    m_activeCapsules.clear();
-
-    for (Laser* l : m_activateLasers)
-    {
-        delete l;
-    }
-    m_activateLasers.clear();
-
-    for (Ball* b : m_activeBalls)
-    {
-        delete b;
-    }
-    m_activeBalls.clear();
-
-    for (Debris* d : m_activeDebris)
-    {
-        delete d;
-    }
-    m_activeDebris.clear();
-
-    Ball* firstBall = AddBall();
+    Ball* firstBall = AddBall(BALL_START_X, BALL_START_Y);
     SetGameSpeed(500.0f);
     firstBall->SetAngle(SHARP_ANGLE);
     firstBall->ChangeDirection(0, -1);
 
     m_explosionActive = false;
-
     m_playerStartElapsed = 0.0f;
-    m_taskMgr.Clear();
     m_taskMgr.Add(this, &Game::TaskPlayerStart);
 
 #if SKIP_PLAYER_READY
@@ -151,8 +123,6 @@ void Game::OnUpdate(float dt)
 {
     if (Engine::GetKeyDown(KEY_DEBUG))
     {
-        LOG(LL_DEBUG, "Spawn a debris");
-
         m_SpawnDebrisPhase = 0;
         m_SpawnDebrisElapsed = 0.0f;
         m_taskMgr.Add(this, &Game::TaskSpawnDebris);
@@ -369,11 +339,39 @@ void Game::OnRender()
 
 void Game::OnExit()
 {
+    m_warpDoorOpen = false;
+    m_playing = false;
+    m_activePower = nullptr;
+
+    for (Capsule* c : m_activeCapsules)
+    {
+        delete c;
+    }
+    m_activeCapsules.clear();
+
+    for (Laser* l : m_activateLasers)
+    {
+        delete l;
+    }
+    m_activateLasers.clear();
+
+    for (Ball* b : m_activeBalls)
+    {
+        delete b;
+    }
+    m_activeBalls.clear();
+
+    for (Debris* d : m_activeDebris)
+    {
+        delete d;
+    }
+    m_activeDebris.clear();
+    m_taskMgr.Clear();
 }
 
-Ball* Game::AddBall()
+Ball* Game::AddBall(float x, float y)
 {
-    Ball* newBall = new Ball();
+    Ball* newBall = new Ball(x, y);
     newBall->Initialize();
     newBall->OnBlockDestroyed.Bind(this, &Game::OnBlockDestroyed);
     newBall->OnBottomReached.Bind(this, &Game::OnBottomReached);
@@ -443,20 +441,37 @@ void Game::CloseTheWarpDoors()
     m_warpDoor.Play("close", false);
 }
 
+bool Game::GetCurrentBallPosition(float* x, float* y)
+{
+    if (m_activeBalls.size() > 0)
+    {
+        Rect<float> m_ballTransform;
+        m_activeBalls[0]->GetTransform(&m_ballTransform);
+        *x = m_ballTransform.x;
+        *y = m_ballTransform.y;
+        return true;
+    }
+
+    LOG(LL_WARNING, "Asking for the ball's position when there are none");
+    return false;
+}
+
 void Game::OnBlockDestroyed(const BallEvent& ballEvent)
 {
     static int capsuleCount = 0;
+    int activeCapsule = static_cast<int>(m_activeCapsules.size());
 
-    int ballCount = static_cast<int>(m_activeBalls.size());
-    if (Capsule::CanSpawn(ballCount))
+    if (activeCapsule == 0)
     {
-        Capsule* newCapsule = Capsule::Spawn(m_activePower, ballEvent.x, ballEvent.y);
-        if (newCapsule)
+        int ballCount = static_cast<int>(m_activeBalls.size());
+        if (Capsule::CanSpawn(ballCount))
         {
-            capsuleCount++;
-            LOG(LL_DEBUG, "Spawn a %s (Count: %d)", newCapsule->ToString().c_str(), capsuleCount);
-
-            m_activeCapsules.push_back(newCapsule);
+            Capsule* newCapsule = Capsule::Spawn(m_activePower, ballEvent.x, ballEvent.y);
+            if (newCapsule)
+            {
+                capsuleCount++;
+                m_activeCapsules.push_back(newCapsule);
+            }
         }
     }
 }
@@ -480,7 +495,6 @@ void Game::OnBottomReached(const BallEvent& ballEvent)
         }
     }
 
-    LOG(LL_DEBUG, "Ball reched bottom (%d balls left)", m_activeBalls.size());
     if (m_activeBalls.size() <= 0)
     {
         SaveGame::life--;
@@ -499,7 +513,14 @@ void Game::OnBottomReached(const BallEvent& ballEvent)
                 m_activePower = nullptr;
             }
 
-            m_taskMgr.Add(this, &Game::TaskResetBall);
+            for (auto& activeCapsule : m_activeCapsules)
+            {
+                delete activeCapsule;
+            }
+            m_activeCapsules.clear();
+
+            Engine::SetState("intro");
+            // m_taskMgr.Add(this, &Game::TaskResetBall);
         }
     }
 }
@@ -565,7 +586,7 @@ bool Game::TaskResetBall(float dt)
     if (m_elapsedReset >= 2.0f)
     {
         m_elapsedReset = 0.0f;
-        Ball* newBall = AddBall();
+        Ball* newBall = AddBall(BALL_START_X, BALL_START_Y);
         SetGameSpeed(500.0f);
         newBall->SetAngle(SHARP_ANGLE);
         newBall->ChangeDirection(0, -1);
@@ -682,8 +703,6 @@ bool Game::TaskPlayerStart(float dt)
 
 void Game::OnLaserShot(const LaserEvent& laserEvent)
 {
-    LOG(LL_WARNING, "OnLaserShot called");
-
     Laser* laserA = new Laser(laserEvent.leftStartX, laserEvent.leftStartY, laserEvent.startV);
     laserA->Initialize();
 
