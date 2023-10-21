@@ -55,6 +55,7 @@ const float LASER_SPEED = 800.0f;
 #define INVINSIBLE 1
 #define CAN_DESTROY_GOLD 0
 #define DRAW_DEBRIS_DEBUG 0
+#define DEBRIS_IMMUNE_FROM_BALL 1
 
 
 #else

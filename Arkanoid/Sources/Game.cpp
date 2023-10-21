@@ -81,7 +81,9 @@ void Game::OnEnter()
     m_elapsedReset = 0.0f;
     m_playing = true;
     m_paddle.Initialize();
+    m_paddle.OnLaserShotDelegate.Clear();
     m_paddle.OnLaserShotDelegate.Bind(this, &Game::OnLaserShot);
+    m_paddle.OnExitLevelDelegate.Clear();
     m_paddle.OnExitLevelDelegate.Bind(this, &Game::OnExitLevel);
     m_warpDoorOpen = false;
 
@@ -194,6 +196,8 @@ void Game::OnUpdate(float dt)
                 (*it)->GetTransform(&debrisTransform);
 
                 bool deleted = false;
+
+#if !DEBRIS_IMMUNE_FROM_BALL
                 for (Ball* ball : m_activeBalls)
                 {
                     Rect<float> ballTransform;
@@ -206,18 +210,25 @@ void Game::OnUpdate(float dt)
                         break;
                     }
                 }
+#endif
 
                 if (!deleted)
                 {
-                    for (Laser* laser : m_activateLasers)
+                    auto laserIt = m_activateLasers.begin();
+                    while (laserIt != m_activateLasers.end())
                     {
                         Rect<float> laserTransform;
-                        laser->GetTransform(&laserTransform);
+                        (*laserIt)->GetTransform(&laserTransform);
                         if (Engine::CheckRects(debrisTransform, laserTransform))
                         {
                             it = m_activeDebris.erase(it);
+                            laserIt = m_activateLasers.erase(laserIt);
                             deleted = true;
                             break;
+                        }
+                        else
+                        {
+                            ++laserIt;
                         }
                     }
                 }
@@ -303,7 +314,7 @@ void Game::OnRender()
     Engine::DrawLine(RIGHT_WALL_X, TOP_WALL_Y, RIGHT_WALL_X, BOTTOM_WALL_Y, NColor::LightGreen);
     Engine::DrawLine(LEFT_WALL_X, TOP_WALL_Y, RIGHT_WALL_X, TOP_WALL_Y, NColor::LightGreen);
 #endif
-    }
+}
 
 void Game::OnExit()
 {
@@ -597,6 +608,8 @@ bool Game::TaskPlayExplosion(float dt)
 
 void Game::OnLaserShot(const LaserEvent& laserEvent)
 {
+    LOG(LL_WARNING, "OnLaserShot called");
+
     Laser* laserA = new Laser(laserEvent.leftStartX, laserEvent.leftStartY, laserEvent.startV);
     laserA->Initialize();
 

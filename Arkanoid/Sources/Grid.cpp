@@ -473,7 +473,7 @@ bool Grid::Cleared()
 
 bool Grid::LastLevel()
 {
-    return SaveGame::round > 34/*Level::data.size() - 1*/;
+    return SaveGame::round > 35/*Level::data.size() - 1*/;
 }
 
 void StaticTile::Render(float x, float y, float w, float h)
