@@ -81,15 +81,13 @@ void Paddle::Update(float dt, float minX, float maxX)
         pX = maxX - m_transform.w;
     }
     
+    float diff = pX - m_transform.x;
     m_transform.x = pX;
 
     for (Ball* ball : m_balls)
     {
-        float diff = pX - m_transform.x;
         Rect<float> ballTransform;
         ball->GetTransform(&ballTransform);
-        //ballTransform.x += m_transform.x + diff;
-
         ball->SetPosition(ballTransform.x + diff, ballTransform.y);
     }
 

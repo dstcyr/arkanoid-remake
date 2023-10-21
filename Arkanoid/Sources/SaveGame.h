@@ -9,7 +9,7 @@ public:
     static int life;
     static int score;
 
-    static void CheckHighScore(int score);
+    static void CheckHighScore();
     static void Save();
     static void Load();
     static void NextRound();

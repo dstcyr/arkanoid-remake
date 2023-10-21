@@ -62,6 +62,13 @@ private:
     float m_SpawnDebrisElapsed;
     Rect<float> m_explosionTransform;
     bool m_explosionActive;
+    float m_playerStartElapsed;
+    size_t m_playerStartSFX;
+    bool m_PlayerStart;
+#if SHOW_MOCK_GAMEPLAY
+    size_t m_mockBackground;
+#endif
+    size_t m_lifeTexture;
 
     void OnBlockDestroyed(const BallEvent& ballEvent);
     void OnBottomReached(const BallEvent& ballEvent);
@@ -73,4 +80,5 @@ private:
     bool TaskLevelCleared(float dt);
     bool TaskSpawnDebris(float dt);
     bool TaskPlayExplosion(float dt);
+    bool TaskPlayerStart(float dt);
 };

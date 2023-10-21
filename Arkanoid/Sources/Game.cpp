@@ -8,6 +8,7 @@
 #include "SaveGame.h"
 #include "LevelData.h"
 #include "Debris.h"
+#include "MathUtils.h"
 
 Game::Game()
 {
@@ -26,6 +27,12 @@ Game::Game()
     m_SpawnDebrisPhase = 0;
     m_SpawnDebrisElapsed = 0.0f;
     m_explosionActive = false;
+    m_PlayerStart = true;
+    m_lifeTexture = 0;
+
+#if SHOW_MOCK_GAMEPLAY
+    m_mockBackground = 0;
+#endif
 }
 
 void Game::OnEnter()
@@ -33,6 +40,7 @@ void Game::OnEnter()
     int levelToLoad = SaveGame::round - 1;
     m_whiteFont = Engine::LoadFont("Assets/Fonts/8bitwonder.ttf", "whitefont", 32, NColor::White);
     m_orangeFont = Engine::LoadFont("Assets/Fonts/8bitwonder.ttf", "redfont", 32, NColor(224, 80, 0, 255));
+    m_playerStartSFX = Engine::LoadSound("Assets/Audio/Start.wav");
 
     switch (levelToLoad % 4)
     {
@@ -49,6 +57,10 @@ void Game::OnEnter()
         m_background = Engine::LoadTexture("Assets/Images/bg04.png");
         break;
     };
+
+#if SHOW_MOCK_GAMEPLAY
+    m_mockBackground = Engine::LoadTexture("Assets/Design/GameplayTransition.png");;
+#endif
 
     m_borders = Engine::LoadTexture("Assets/Images/borders.png");
 
@@ -77,9 +89,10 @@ void Game::OnEnter()
     m_explosion.Init("Assets/Images/explosion.png", 5, 32, 32);
     m_explosion.AddClip("play", 0, 5, 0.2f);
 
+    m_lifeTexture = Engine::LoadTexture("Assets/Images/life.png");
+
     m_vausShips = 2;
     m_elapsedReset = 0.0f;
-    m_playing = true;
     m_paddle.Initialize();
     m_paddle.OnLaserShotDelegate.Clear();
     m_paddle.OnLaserShotDelegate.Bind(this, &Game::OnLaserShot);
@@ -119,6 +132,19 @@ void Game::OnEnter()
     firstBall->ChangeDirection(0, -1);
 
     m_explosionActive = false;
+
+    m_playerStartElapsed = 0.0f;
+    m_taskMgr.Clear();
+    m_taskMgr.Add(this, &Game::TaskPlayerStart);
+
+#if SKIP_PLAYER_READY
+    m_taskMgr.Clear();
+    m_playing = true;
+    m_PlayerStart = false;
+#else
+    Engine::PlaySFX(m_playerStartSFX);
+    m_PlayerStart = true;
+#endif
 }
 
 void Game::OnUpdate(float dt)
@@ -276,6 +302,10 @@ void Game::OnRender()
     Engine::DrawTexture(m_borders, PLAYGROUND_OFFSET_X, 0);
 #endif
 
+#if SHOW_MOCK_GAMEPLAY
+    Engine::DrawTexture(m_mockBackground, 0, 0, NColor(255, 255, 255, 50));
+#endif
+
     m_warpDoor.Render({ 777.0f, 827.0f, 31.0f, 102.0f });
 
     m_topDoorA.Render({ 201, 0, 98.0f, 34.0f });
@@ -307,6 +337,30 @@ void Game::OnRender()
     if (m_explosionActive)
     {
         m_explosion.Render(m_explosionTransform);
+    }
+
+    if (m_PlayerStart)
+    {
+        Engine::DrawString("PLAYER 1", m_whiteFont, 300.f, 690.0f);
+        Engine::DrawString("READY", m_whiteFont, 330.f, 760.0f);
+    }
+
+    Engine::DrawString("1UP", m_orangeFont, 805.0f, 210.0f);
+    Engine::DrawString(std::to_string(SaveGame::score), m_whiteFont, 833.0f, 245.0f);
+    Engine::DrawString("HIGH", m_orangeFont, 810.0f, 70.0f);
+    Engine::DrawString("SCORE", m_orangeFont, 835.0f, 105.0f);
+    Engine::DrawString(std::to_string(SaveGame::highScore), m_whiteFont, 833.0f, 140.0f);
+    Engine::DrawString("ROUND", m_orangeFont, 835.0f, 825.0f);
+    Engine::DrawString(std::to_string(SaveGame::round), m_whiteFont, 930.0f, 860.0f);
+
+    int numberOfLives = Engine::Clamp(SaveGame::life, 0, 36);
+    for (int i = 0; i < numberOfLives; i++)
+    {
+        int y = i / 3;
+        int x = i % 3;
+        float offsetX = static_cast<float>(x) * 70.0f;
+        float offsetY = static_cast<float>(y) * 30.0f;
+        Engine::DrawTexture(m_lifeTexture, 810.0f + offsetX, 450.0f + offsetY);
     }
 
 #if SHOW_DEBUG_GAME_BOUNDARY
@@ -432,13 +486,24 @@ void Game::OnBottomReached(const BallEvent& ballEvent)
     LOG(LL_DEBUG, "Ball reched bottom (%d balls left)", m_activeBalls.size());
     if (m_activeBalls.size() <= 0)
     {
-        if (m_activePower)
+        SaveGame::life--;
+        if (SaveGame::life <= 0)
         {
-            m_activePower->Deactivate(this);
-            m_activePower = nullptr;
+            // Game Over
+            SaveGame::life = 0;
+            SaveGame::CheckHighScore();
+            Engine::SetState("title");
         }
+        else
+        {
+            if (m_activePower)
+            {
+                m_activePower->Deactivate(this);
+                m_activePower = nullptr;
+            }
 
-        m_taskMgr.Add(this, &Game::TaskResetBall);
+            m_taskMgr.Add(this, &Game::TaskResetBall);
+        }
     }
 }
 
@@ -603,6 +668,18 @@ bool Game::TaskPlayExplosion(float dt)
         return false;
     }
 
+    return true;
+}
+
+bool Game::TaskPlayerStart(float dt)
+{
+    m_playerStartElapsed += dt;
+    if (m_playerStartElapsed >= 3)
+    {
+        m_PlayerStart = false;
+        m_playing = true;
+        return false;
+    }
     return true;
 }
 

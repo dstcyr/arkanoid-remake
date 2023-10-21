@@ -168,7 +168,7 @@ void Grid::Load(int level)
                             else if (tileNum == 9)
                             {
                                 // TODO (REVIEW) : optimize code repetition here
-                            
+
                                 // Silver walls - 50 points times the number of the round.
                                 // The number of energy ball hits required to break the 
                                 // hard walls follows :
@@ -177,7 +177,7 @@ void Grid::Load(int level)
                                 //      - 4 times - 17th to 24th round
                                 //      - 5 times - 25th to 32nd round
                                 AnimatedTile* animTile = new AnimatedTile();
-                            
+
                                 int round = level + 1;
                                 animTile->Init("Assets/Images/silver.png", 6, BLOCK_WIDTH, BLOCK_HEIGHT);
                                 animTile->type = tileNum;
@@ -189,7 +189,7 @@ void Grid::Load(int level)
                             {
                                 // Gold walls are indestructible.
                                 AnimatedTile* animTile = new AnimatedTile();
-                            
+
                                 animTile->Init("Assets/Images/gold.png", 6, BLOCK_WIDTH, BLOCK_HEIGHT);
                                 animTile->type = tileNum;
                                 animTile->hit = 100;
@@ -449,10 +449,11 @@ bool Grid::Hit(int idx)
     if (tile->hit <= 0)
     {
         tile->type = 0;
+        SaveGame::score += tile->score;
     }
 
     return tile->hit <= 0;
-    }
+}
 
 bool Grid::Cleared()
 {

@@ -4,10 +4,11 @@
 int SaveGame::highScore = 1000;
 int SaveGame::life = 2;
 int SaveGame::round = START_AT_ROUND;
+int SaveGame::score = 0;
 
 CFile SaveGame::m_saveGameFile;
 
-void SaveGame::CheckHighScore(int score)
+void SaveGame::CheckHighScore()
 {
     if (score > highScore)
     {
@@ -27,6 +28,10 @@ void SaveGame::Save()
 
 void SaveGame::Load()
 {
+    life = 2;
+    round = START_AT_ROUND;
+    score = 0;
+
     if (CFile::Exists("arkanoid.sav"))
     {
         m_saveGameFile.Load("arkanoid.sav");

@@ -1,11 +1,13 @@
 #include "Title.h"
 #include "Engine.h"
+#include "SaveGame.h"
 
 Title::Title()
 {
     m_whiteFont = 0;
     m_orangeFont = 0;
     m_title = 0;
+    m_titleMusic = 0;
 }
 
 void Title::OnEnter()
@@ -13,12 +15,16 @@ void Title::OnEnter()
     m_whiteFont = Engine::LoadFont("Assets/Fonts/8bitwonder.ttf", "whitefont", 32, NColor::White);
     m_orangeFont = Engine::LoadFont("Assets/Fonts/8bitwonder.ttf", "redfont", 32, NColor(224, 80, 0, 255));
     m_title = Engine::LoadTexture("Assets/Images/Title.png");
+    m_titleMusic = Engine::LoadMusic("Assets/Audio/Menu.wav");
+
+    Engine::PlayMusic(m_titleMusic, false);
 }
 
 void Title::OnUpdate(float dt)
 {
     if (Engine::GetKeyDown(KEY_START))
     {
+        SaveGame::Load();
         Engine::SetState("intro");
     }
 }

@@ -15,4 +15,5 @@ private:
     size_t m_whiteFont;
     size_t m_orangeFont;
     size_t m_title;
+    size_t m_titleMusic;
 };
