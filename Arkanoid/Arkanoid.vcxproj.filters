@@ -1,13 +1,85 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Sources">
-      <UniqueIdentifier>{e664bbd9-9dd8-49be-b8e7-51037b7af99c}</UniqueIdentifier>
+    <ClCompile Include="Sources\Arkanoid.cpp" />
+    <ClCompile Include="Sources\Ball.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Capsule.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Grid.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Laser.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Paddle.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Game.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\LevelIntro.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Title.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\SaveGame.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\LevelData.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Debris.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="States">
+      <UniqueIdentifier>{f43c630f-81bc-4cc5-bccf-7efe944ddd51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{3039bdb9-5ffd-46f6-9485-ced8bdab0f9a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sources\Arkanoid.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
+    <ClInclude Include="Sources\Ball.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Capsule.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Config.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Grid.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Laser.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\LevelData.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Paddle.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Game.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\LevelIntro.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Title.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\SaveGame.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Debris.h">
+      <Filter>Game</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

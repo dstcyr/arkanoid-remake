@@ -153,6 +153,31 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\Arkanoid.cpp" />
+    <ClCompile Include="Sources\Ball.cpp" />
+    <ClCompile Include="Sources\Capsule.cpp" />
+    <ClCompile Include="Sources\Debris.cpp" />
+    <ClCompile Include="Sources\Game.cpp" />
+    <ClCompile Include="Sources\Grid.cpp" />
+    <ClCompile Include="Sources\Laser.cpp" />
+    <ClCompile Include="Sources\LevelData.cpp" />
+    <ClCompile Include="Sources\LevelIntro.cpp" />
+    <ClCompile Include="Sources\Paddle.cpp" />
+    <ClCompile Include="Sources\SaveGame.cpp" />
+    <ClCompile Include="Sources\Title.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Sources\Ball.h" />
+    <ClInclude Include="Sources\Capsule.h" />
+    <ClInclude Include="Sources\Config.h" />
+    <ClInclude Include="Sources\Debris.h" />
+    <ClInclude Include="Sources\Game.h" />
+    <ClInclude Include="Sources\Grid.h" />
+    <ClInclude Include="Sources\Laser.h" />
+    <ClInclude Include="Sources\LevelData.h" />
+    <ClInclude Include="Sources\LevelIntro.h" />
+    <ClInclude Include="Sources\Paddle.h" />
+    <ClInclude Include="Sources\SaveGame.h" />
+    <ClInclude Include="Sources\Title.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
