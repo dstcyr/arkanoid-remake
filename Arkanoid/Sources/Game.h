@@ -11,6 +11,19 @@ class Capsule;
 class Laser;
 class Debris;
 
+class SpawnDebrisState : public CTaskState
+{
+public:
+    SpawnDebrisState()
+    {
+        spawnDebrisPhase = 0;
+        spawnDebrisElapsed = 0;
+    }
+
+    int spawnDebrisPhase;
+    float spawnDebrisElapsed;
+};
+
 class Game : public IState
 {
 public:
@@ -51,7 +64,18 @@ private:
     float m_gameSpeed;
     Capsule* m_activePower;
     int m_vausShips;
-    CTaskManager m_taskMgr;
+    
+    
+
+
+
+     // CTaskManager m_taskMgr;
+    CTaskManager m_taskMgr2;
+
+
+
+
+
     float m_elapsedReset;
     float m_elapsedEndRound;
     bool m_playing;
@@ -78,9 +102,9 @@ private:
     void OnExitLevel(const PaddleEvent& paddleEvent);
     void UpdateCapsules(float dt);
     void ActivatePower(Capsule* capsule);
-    bool TaskResetBall(float dt);
-    bool TaskLevelCleared(float dt);
-    bool TaskSpawnDebris(float dt);
-    bool TaskPlayExplosion(float dt);
-    bool TaskPlayerStart(float dt);
+    bool TaskResetBall(float dt, CTaskState* state);
+    bool TaskLevelCleared(float dt, CTaskState* state);
+    bool TaskSpawnDebris(float dt, SpawnDebrisState* state);
+    bool TaskPlayExplosion(float dt, CTaskState* state);
+    bool TaskPlayerStart(float dt, CTaskState* state);
 };

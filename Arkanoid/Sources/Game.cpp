@@ -107,7 +107,7 @@ void Game::OnEnter()
 
     m_explosionActive = false;
     m_playerStartElapsed = 0.0f;
-    m_taskMgr.Add(this, &Game::TaskPlayerStart);
+    m_taskMgr2.Add(this, &Game::TaskPlayerStart);
 
 #if SKIP_PLAYER_READY
     m_taskMgr.Clear();
@@ -125,7 +125,8 @@ void Game::OnUpdate(float dt)
     {
         m_SpawnDebrisPhase = 0;
         m_SpawnDebrisElapsed = 0.0f;
-        m_taskMgr.Add(this, &Game::TaskSpawnDebris);
+        //m_taskMgr.Add(this, &Game::TaskSpawnDebris);
+        m_taskMgr2.Add(this, &Game::TaskSpawnDebris);
     }
 
     if (m_playing)
@@ -134,7 +135,7 @@ void Game::OnUpdate(float dt)
         if (m_grid.Cleared())
         {
             m_playing = false;
-            m_taskMgr.Add(this, &Game::TaskLevelCleared);
+            m_taskMgr2.Add(this, &Game::TaskLevelCleared);
         }
         else
         {
@@ -247,7 +248,8 @@ void Game::OnUpdate(float dt)
                     m_explosion.Play("play", false);
                     m_explosionActive = true;
                     m_explosionTransform.Set(debrisTransform.x, debrisTransform.y, debrisTransform.w, debrisTransform.w);
-                    m_taskMgr.Add(this, &Game::TaskPlayExplosion);
+                    //m_taskMgr.Add(this, &Game::TaskPlayExplosion);
+                    m_taskMgr2.Add(this, &Game::TaskPlayExplosion);
                 }
             }
 
@@ -256,7 +258,8 @@ void Game::OnUpdate(float dt)
         }
     }
 
-    m_taskMgr.Update(dt);
+    //m_taskMgr.Update(dt);
+    m_taskMgr2.Update(dt);
 }
 
 void Game::OnRender()
@@ -366,7 +369,7 @@ void Game::OnExit()
         delete d;
     }
     m_activeDebris.clear();
-    m_taskMgr.Clear();
+    m_taskMgr2.Clear();
 }
 
 Ball* Game::AddBall(float x, float y)
@@ -405,23 +408,23 @@ void Game::RemoveVaus()
 
 void Game::ActivateLaser()
 {
-    m_taskMgr.Add<Paddle>(&m_paddle, &Paddle::TaskActivateLaser);
+    m_taskMgr2.Add(&m_paddle, &Paddle::TaskActivateLaser);
 }
 
 void Game::DeactivateLaser()
 {
-    m_taskMgr.Add<Paddle>(&m_paddle, &Paddle::TaskDeactivateLaser);
+    m_taskMgr2.Add(&m_paddle, &Paddle::TaskDeactivateLaser);
 }
 
 void Game::ExpandVaus()
 {
-    m_taskMgr.Add<Paddle>(&m_paddle, &Paddle::TaskExpandShip);
+    m_taskMgr2.Add(&m_paddle, &Paddle::TaskExpandShip);
 }
 
 
 void Game::StandardVaus()
 {
-    m_taskMgr.Add<Paddle>(&m_paddle, &Paddle::TaskContractShip);
+    m_taskMgr2.Add(&m_paddle, &Paddle::TaskContractShip);
 }
 
 void Game::ActivateCatch(bool activate)
@@ -580,7 +583,7 @@ void Game::ActivatePower(Capsule* capsule)
     m_activePower->Activate(this);
 }
 
-bool Game::TaskResetBall(float dt)
+bool Game::TaskResetBall(float dt, CTaskState* state)
 {
     m_elapsedReset += dt;
     if (m_elapsedReset >= 2.0f)
@@ -596,7 +599,7 @@ bool Game::TaskResetBall(float dt)
     return true;
 }
 
-bool Game::TaskLevelCleared(float dt)
+bool Game::TaskLevelCleared(float dt, CTaskState* state)
 {
     m_elapsedEndRound += dt;
     if (m_elapsedEndRound >= 3.0f)
@@ -609,21 +612,88 @@ bool Game::TaskLevelCleared(float dt)
         else
         {
             Engine::SetState("intro");
-            return false;
         }
+
+        return false;
     }
 
     return true;
 }
 
-bool Game::TaskSpawnDebris(float dt)
+//bool Game::TaskSpawnDebris(float dt, CTaskState* state)
+//{
+//    /*switch (m_SpawnDebrisPhase)
+//    {
+//    case 0:
+//    {
+//        m_topDoorA.Play("open", false);
+//        m_SpawnDebrisPhase++;
+//        break;
+//    }
+//
+//    case 1:
+//    {
+//        if (!m_topDoorA.Update(dt))
+//        {
+//            m_topDoorA.Play("open_idle", false);
+//            m_SpawnDebrisPhase++;
+//        }
+//        break;
+//    }
+//
+//    case 2:
+//    {
+//        Debris* newDebris = new Debris(0);
+//        newDebris->Initialize();
+//        newDebris->SetPosition(225.0f, 10.0f);
+//        m_activeDebris.push_back(newDebris);
+//        m_SpawnDebrisElapsed = 0.0f;
+//        m_SpawnDebrisPhase++;
+//        break;
+//    }
+//
+//    case 3:
+//    {
+//        m_SpawnDebrisElapsed += dt;
+//        if (m_SpawnDebrisElapsed >= 0.3f)
+//        {
+//            m_SpawnDebrisPhase++;
+//        }
+//        break;
+//    }
+//
+//    case 4:
+//    {
+//        m_topDoorA.Play("close", false);
+//        m_SpawnDebrisPhase++;
+//        break;
+//    }
+//
+//    case 5:
+//    {
+//        if (!m_topDoorA.Update(dt))
+//        {
+//            m_topDoorA.Play("close_idle", false);
+//            return false;
+//        }
+//    }
+//    }
+//
+//    return true;*/
+//
+//    return false;
+//}
+
+bool Game::TaskSpawnDebris(float dt, SpawnDebrisState* state)
 {
-    switch (m_SpawnDebrisPhase)
+    CHECK(state);
+
+    switch (state->spawnDebrisPhase)
     {
     case 0:
     {
         m_topDoorA.Play("open", false);
-        m_SpawnDebrisPhase++;
+        state->spawnDebrisPhase++;
         break;
     }
 
@@ -632,7 +702,7 @@ bool Game::TaskSpawnDebris(float dt)
         if (!m_topDoorA.Update(dt))
         {
             m_topDoorA.Play("open_idle", false);
-            m_SpawnDebrisPhase++;
+            state->spawnDebrisPhase++;
         }
         break;
     }
@@ -644,16 +714,17 @@ bool Game::TaskSpawnDebris(float dt)
         newDebris->SetPosition(225.0f, 10.0f);
         m_activeDebris.push_back(newDebris);
         m_SpawnDebrisElapsed = 0.0f;
-        m_SpawnDebrisPhase++;
+        state->spawnDebrisPhase++;
         break;
     }
 
     case 3:
     {
-        m_SpawnDebrisElapsed += dt;
-        if (m_SpawnDebrisElapsed >= 0.3f)
+        state->spawnDebrisElapsed += dt;
+        if (state->spawnDebrisElapsed >= 0.3f)
         {
-            m_SpawnDebrisPhase++;
+            state->spawnDebrisElapsed = 0.0f;
+            state->spawnDebrisPhase++;
         }
         break;
     }
@@ -661,7 +732,7 @@ bool Game::TaskSpawnDebris(float dt)
     case 4:
     {
         m_topDoorA.Play("close", false);
-        m_SpawnDebrisPhase++;
+        state->spawnDebrisPhase++;
         break;
     }
 
@@ -678,7 +749,7 @@ bool Game::TaskSpawnDebris(float dt)
     return true;
 }
 
-bool Game::TaskPlayExplosion(float dt)
+bool Game::TaskPlayExplosion(float dt, CTaskState* state)
 {
     if (!m_explosion.Update(dt))
     {
@@ -689,7 +760,20 @@ bool Game::TaskPlayExplosion(float dt)
     return true;
 }
 
-bool Game::TaskPlayerStart(float dt)
+//bool Game::TaskPlayExplosion(float dt)
+//{
+//    //if (!m_explosion.Update(dt))
+//    //{
+//    //    m_explosionActive = false;
+//    //    return false;
+//    //}
+//
+//    //return true;
+//
+//    return false;
+//}
+
+bool Game::TaskPlayerStart(float dt, CTaskState* state)
 {
     m_playerStartElapsed += dt;
     if (m_playerStartElapsed >= 3)
@@ -717,5 +801,5 @@ void Game::OnExitLevel(const PaddleEvent& paddleEvent)
 {
     m_warpDoorOpen = false;
     m_playing = false;
-    m_taskMgr.Add(this, &Game::TaskLevelCleared);
+    m_taskMgr2.Add(this, &Game::TaskLevelCleared);
 }

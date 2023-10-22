@@ -3,6 +3,7 @@
 #include "Rect.h"
 #include "Delegate.h"
 #include <vector>
+#include "TaskManager.h"
 
 class Ball;
 
@@ -66,10 +67,10 @@ private:
     void UpdateControls(float dt, float* px);
 
 public:
-    bool TaskExpandShip(float dt);
-    bool TaskContractShip(float dt);
-    bool TaskActivateLaser(float dt);
-    bool TaskDeactivateLaser(float dt);
+    bool TaskExpandShip(float dt, CTaskState* state);
+    bool TaskContractShip(float dt, CTaskState* state);
+    bool TaskActivateLaser(float dt, CTaskState* state);
+    bool TaskDeactivateLaser(float dt, CTaskState* state);
 
 private:
     bool UpdateLaserTask(float dt, bool activate);

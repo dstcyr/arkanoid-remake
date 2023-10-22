@@ -368,7 +368,7 @@ void Paddle::UpdateControls(float dt, float* px)
     }
 }
 
-bool Paddle::TaskExpandShip(float dt)
+bool Paddle::TaskExpandShip(float dt, CTaskState* state)
 {
     m_expandElapsed += dt;
 
@@ -387,7 +387,7 @@ bool Paddle::TaskExpandShip(float dt)
     return true;
 }
 
-bool Paddle::TaskContractShip(float dt)
+bool Paddle::TaskContractShip(float dt, CTaskState* state)
 {
     m_expandElapsed += dt;
 
@@ -406,12 +406,12 @@ bool Paddle::TaskContractShip(float dt)
     return true;
 }
 
-bool Paddle::TaskActivateLaser(float dt)
+bool Paddle::TaskActivateLaser(float dt, CTaskState* state)
 {
     return UpdateLaserTask(dt, true);
 }
 
-bool Paddle::TaskDeactivateLaser(float dt)
+bool Paddle::TaskDeactivateLaser(float dt, CTaskState* state)
 {
     return UpdateLaserTask(dt, false);
 }
