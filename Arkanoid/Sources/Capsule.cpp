@@ -8,11 +8,11 @@
 // Capsule can spawn only one at a time
 // No capsule spawns when there are multiple balls
 
-
 Capsule::Capsule() : Capsule(0.0f, 0.0f)
 {
     m_transform = Rect<float>();
     m_velocity = 0.0f;
+    m_activated = false;
 }
 
 Capsule::Capsule(float x, float y)
@@ -22,6 +22,7 @@ Capsule::Capsule(float x, float y)
     m_transform.w = BLOCK_WIDTH;
     m_transform.h = BLOCK_HEIGHT;
     m_velocity = CAPSULE_FALLING_SPEED;
+    m_activated = false;
 }
 
 void Capsule::Update(float dt)
@@ -121,42 +122,44 @@ Capsule* Capsule::Spawn(Capsule* activePower, float x, float y)
 #endif
 
     Capsule* newCapsule = nullptr;
-
-    switch (selectedCapsule)
+    if (mapSelectedToCapsule[selectedCapsule] != activePowerId)
     {
-    case 0:
-        newCapsule = new ExpandCapsule(x, y);
-        break;
+        switch (selectedCapsule)
+        {
+        case 0:
+            newCapsule = new ExpandCapsule(x, y);
+            break;
 
-    case 1:
-        newCapsule = new SlowCapsule(x, y);
-        break;
+        case 1:
+            newCapsule = new SlowCapsule(x, y);
+            break;
 
-    case 2:
-        newCapsule = new CatchCapsule(x, y);
-        break;
+        case 2:
+            newCapsule = new CatchCapsule(x, y);
+            break;
 
-    case 3:
-        newCapsule = new ExpandCapsule(x, y);
-        break;
+        case 3:
+            newCapsule = new ExpandCapsule(x, y);
+            break;
 
-    case 4:
-        newCapsule = new DisruptCapsule(x, y);
-        break;
+        case 4:
+            newCapsule = new DisruptCapsule(x, y);
+            break;
 
-    case 5:
-        newCapsule = new LaserCapsule(x, y);
-        break;
+        case 5:
+            newCapsule = new LaserCapsule(x, y);
+            break;
 
-    case 6:
-        newCapsule = new DisruptCapsule(x, y);
-        break;
-    }
+        case 6:
+            newCapsule = new DisruptCapsule(x, y);
+            break;
+        }
 
-    if (newCapsule)
-    {
-        newCapsule->Init();
-        newCapsule->m_animation.Play("fall", true);
+        if (newCapsule)
+        {
+            newCapsule->Init();
+            newCapsule->m_animation.Play("fall", true);
+        }
     }
 
     // If the last bits are 00000111, the number is 7 and there is no case for that.
@@ -184,6 +187,21 @@ void Capsule::Init()
 
 void Capsule::Deactivate(Game* game)
 {
+}
+
+void Capsule::OnActivated()
+{
+    m_activated = true;
+}
+
+void Capsule::OnDeactivated()
+{
+    m_activated = false;
+}
+
+bool Capsule::IsActive()
+{
+    return m_activated;
 }
 
 BreakCapsule::BreakCapsule() : Capsule()
@@ -384,13 +402,13 @@ std::string LaserCapsule::ToString()
 void LaserCapsule::Activate(Game* game)
 {
     CHECK(game);
-    game->ActivateLaser();
+    game->ActivateLaser(this);
 }
 
 void LaserCapsule::Deactivate(Game* game)
 {
     CHECK(game);
-    game->DeactivateLaser();
+    game->DeactivateLaser(this);
 }
 
 void LaserCapsule::Init()

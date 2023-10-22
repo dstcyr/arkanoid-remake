@@ -24,6 +24,37 @@ public:
     float spawnDebrisElapsed;
 };
 
+class PowerTask : public CTaskState
+{
+public:
+    PowerTask()
+    {
+        PowerPhase = 0;
+        CurrentPower = nullptr;
+        NextPower = nullptr;
+    }
+
+    int PowerPhase;
+    Capsule* CurrentPower;
+    Capsule* NextPower;
+};
+
+class CapsuleState : public CTaskState
+{
+public:
+    CapsuleState()
+    {
+        CurrentCapsule = nullptr;
+    }
+
+    CapsuleState(Capsule* capsule)
+    {
+        CurrentCapsule = capsule;
+    }
+
+    Capsule* CurrentCapsule;
+};
+
 class Game : public IState
 {
 public:
@@ -38,8 +69,8 @@ public:
     float GetGameSpeed() const;
     void AddVaus();
     void RemoveVaus();
-    void ActivateLaser();
-    void DeactivateLaser();
+    void ActivateLaser(Capsule* capsule);
+    void DeactivateLaser(Capsule* capsule);
     void ExpandVaus();
     void StandardVaus();
     void ActivateCatch(bool activate);
@@ -64,12 +95,12 @@ private:
     float m_gameSpeed;
     Capsule* m_activePower;
     int m_vausShips;
-    
-    
 
 
 
-     // CTaskManager m_taskMgr;
+
+
+    // CTaskManager m_taskMgr;
     CTaskManager m_taskMgr2;
 
 
@@ -101,7 +132,9 @@ private:
     void OnLaserShot(const LaserEvent& laserEvent);
     void OnExitLevel(const PaddleEvent& paddleEvent);
     void UpdateCapsules(float dt);
-    void ActivatePower(Capsule* capsule);
+    //void ActivatePower(Capsule* capsule);
+
+    bool TaskActivatePower(float dt, PowerTask* state);
     bool TaskResetBall(float dt, CTaskState* state);
     bool TaskLevelCleared(float dt, CTaskState* state);
     bool TaskSpawnDebris(float dt, SpawnDebrisState* state);

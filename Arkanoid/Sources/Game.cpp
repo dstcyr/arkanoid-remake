@@ -406,14 +406,16 @@ void Game::RemoveVaus()
     m_vausShips--;
 }
 
-void Game::ActivateLaser()
+void Game::ActivateLaser(Capsule* capsule)
 {
-    m_taskMgr2.Add(&m_paddle, &Paddle::TaskActivateLaser);
+    CapsuleState* newCapsuleState = new CapsuleState(capsule);
+    m_taskMgr2.Add(&m_paddle, newCapsuleState , &Paddle::TaskActivateLaser);
 }
 
-void Game::DeactivateLaser()
+void Game::DeactivateLaser(Capsule* capsule)
 {
-    m_taskMgr2.Add(&m_paddle, &Paddle::TaskDeactivateLaser);
+    CapsuleState* newCapsuleState = new CapsuleState(capsule);
+    m_taskMgr2.Add(&m_paddle, newCapsuleState , &Paddle::TaskDeactivateLaser);
 }
 
 void Game::ExpandVaus()
@@ -548,7 +550,11 @@ void Game::UpdateCapsules(float dt)
             paddleTransfrom.x, paddleTransfrom.y, paddleTransfrom.w, paddleTransfrom.h,
             capsuleTransform.x, capsuleTransform.y, capsuleTransform.w, capsuleTransform.h))
         {
-            ActivatePower(capsule);
+            //ActivatePower(capsule);
+            PowerTask* taskState = new PowerTask();
+            taskState->CurrentPower = m_activePower;
+            taskState->NextPower = capsule;
+            m_taskMgr2.Add(this, taskState, &Game::TaskActivatePower);
             m_destroyedCapsules.push_back(capsule);
         }
     }
@@ -572,15 +578,71 @@ void Game::UpdateCapsules(float dt)
     m_destroyedCapsules.clear();
 }
 
-void Game::ActivatePower(Capsule* capsule)
+//void Game::ActivatePower(Capsule* capsule)
+//{
+//    if (m_activePower)
+//    {
+//        m_activePower->Deactivate(this);
+//    }
+//
+//    m_activePower = capsule;
+//    m_activePower->Activate(this);
+//}
+
+bool Game::TaskActivatePower(float dt, PowerTask* state)
 {
-    if (m_activePower)
+    if (state)
     {
-        m_activePower->Deactivate(this);
+        if (state->PowerPhase == 0)
+        {
+            if (state->CurrentPower)
+            {
+                state->CurrentPower->Deactivate(this);
+            }
+
+            state->PowerPhase++;
+        }
+        else if (state->PowerPhase == 1)
+        {
+            if (state->CurrentPower)
+            {
+                if (!state->CurrentPower->IsActive())
+                {
+                    state->PowerPhase++;
+                }
+            }
+            else
+            {
+                state->PowerPhase++;
+            }
+        }
+        else if(state->PowerPhase == 2)
+        {
+            if (state->NextPower)
+            {
+                state->NextPower->Activate(this);
+            }
+
+            state->PowerPhase++;
+        }
+        else if (state->PowerPhase == 3)
+        {
+            if (state->NextPower)
+            {
+                if (state->NextPower->IsActive())
+                {
+                    m_activePower = state->NextPower;
+                    state->PowerPhase++;
+                }
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    m_activePower = capsule;
-    m_activePower->Activate(this);
+    return true;
 }
 
 bool Game::TaskResetBall(float dt, CTaskState* state)

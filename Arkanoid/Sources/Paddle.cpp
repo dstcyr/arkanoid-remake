@@ -4,6 +4,8 @@
 #include "Ball.h"
 #include "Collision.h"
 #include "MathUtils.h"
+#include "Game.h"
+#include "Capsule.h"
 
 #if SHOW_PADDLE_DEBUG_COLLISION
 float cpX = 0.0f;
@@ -406,17 +408,17 @@ bool Paddle::TaskContractShip(float dt, CTaskState* state)
     return true;
 }
 
-bool Paddle::TaskActivateLaser(float dt, CTaskState* state)
+bool Paddle::TaskActivateLaser(float dt, CapsuleState* state)
 {
-    return UpdateLaserTask(dt, true);
+    return UpdateLaserTask(dt, true, state->CurrentCapsule);
 }
 
-bool Paddle::TaskDeactivateLaser(float dt, CTaskState* state)
+bool Paddle::TaskDeactivateLaser(float dt, CapsuleState* state)
 {
-    return UpdateLaserTask(dt, false);
+    return UpdateLaserTask(dt, false, state->CurrentCapsule);
 }
 
-bool Paddle::UpdateLaserTask(float dt, bool activate)
+bool Paddle::UpdateLaserTask(float dt, bool activate, Capsule* capsule)
 {
     static int activationPhase = 0;
 
@@ -444,6 +446,19 @@ bool Paddle::UpdateLaserTask(float dt, bool activate)
             {
                 m_sideWidth = SIDE_ZONE_WIDTH;
                 activationPhase = 0;
+
+                if (capsule)
+                {
+                    if (activate)
+                    {
+                        capsule->OnActivated();
+                    }
+                    else
+                    {
+                        capsule->OnDeactivated();
+                    }
+                }
+
                 return false;
             }
             break;

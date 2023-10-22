@@ -28,10 +28,15 @@ public:
     virtual void Activate(Game* game) = 0;
     virtual void Deactivate(Game* game);
 
+    void OnActivated();
+    void OnDeactivated();
+    bool IsActive();
+
 protected:
     Rect<float> m_transform;
     float m_velocity;
     Animation m_animation;
+    bool m_activated;
 };
 
 // 0 : pink - opens warp escape - advance to next round

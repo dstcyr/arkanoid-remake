@@ -6,6 +6,8 @@
 #include "TaskManager.h"
 
 class Ball;
+class CapsuleState;
+class Capsule;
 
 class LaserEvent : public Event
 {
@@ -69,9 +71,9 @@ private:
 public:
     bool TaskExpandShip(float dt, CTaskState* state);
     bool TaskContractShip(float dt, CTaskState* state);
-    bool TaskActivateLaser(float dt, CTaskState* state);
-    bool TaskDeactivateLaser(float dt, CTaskState* state);
+    bool TaskActivateLaser(float dt, CapsuleState* state);
+    bool TaskDeactivateLaser(float dt, CapsuleState* state);
 
 private:
-    bool UpdateLaserTask(float dt, bool activate);
+    bool UpdateLaserTask(float dt, bool activate, Capsule* capsule);
 };
