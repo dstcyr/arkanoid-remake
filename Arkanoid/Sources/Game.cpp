@@ -1,48 +1,108 @@
 #include "Game.h"
-#include "Log.h"
-#include "Engine.h"
-#include "Capsule.h"
-#include "Collision.h"
-#include "Laser.h"
-#include <functional>
 #include "SaveGame.h"
-#include "LevelData.h"
-#include "Debris.h"
+#include "Engine.h"
+#include "World.h"
+#include "Ship.h"
+#include "Log.h"
 #include "MathUtils.h"
-
-Game::Game()
-{
-    m_whiteFont = 0;
-    m_orangeFont = 0;
-    m_background = 0;
-    m_borders = 0;
-    m_bounds = Rect<float>(LEFT_WALL_X, TOP_WALL_Y, RIGHT_WALL_X, BOTTOM_WALL_Y);
-    m_gameSpeed = 0.0f;
-    m_vausShips = 0;
-    m_activePower = nullptr;
-    m_elapsedReset = 0.0f;
-    m_elapsedEndRound = 0.0f;
-    m_playing = false;
-    m_warpDoorOpen = false;
-    m_SpawnDebrisPhase = 0;
-    m_SpawnDebrisElapsed = 0.0f;
-    m_explosionActive = false;
-    m_PlayerStart = true;
-    m_lifeTexture = 0;
-
-#if SHOW_MOCK_GAMEPLAY
-    m_mockBackground = 0;
-#endif
-}
 
 void Game::OnEnter()
 {
     int levelToLoad = SaveGame::round - 1;
-    m_whiteFont = Engine::LoadFont("Assets/Fonts/8bitwonder.ttf", "whitefont", 32, NColor::White);
-    m_orangeFont = Engine::LoadFont("Assets/Fonts/8bitwonder.ttf", "redfont", 32, NColor(224, 80, 0, 255));
-    m_playerStartSFX = Engine::LoadSound("Assets/Audio/Start.wav");
+    LoadUIElements(levelToLoad);
+    LoadDoors();
 
-    switch (levelToLoad % 4)
+    World::Get().LoadLevel(levelToLoad);
+    World::Get().OnBlockDestroyed.Bind(this, &Game::OnBlockDestroyed);
+    World::Get().GetShip()->OnLaserShotDelegate.Bind(this, &Game::OnLaserShot);
+
+    m_ballMgr.OnBallReachedBottom.Bind(this, &Game::OnBottomReached);
+    m_ballMgr.SpawnBall();
+
+    m_powerMgr.OnActivateSlowPower.Bind(this, &Game::OnActivateSlowPower);
+    m_powerMgr.OnActivateDistruptPower.Bind(this, &Game::OnActivateDisruptPower);
+    m_powerMgr.OnActivateBreakPower.Bind(this, &Game::OnActivateBreakPower);
+
+    m_levelEnded = false;
+}
+
+void Game::OnUpdate(float dt)
+{
+    if (m_levelEnded)
+    {
+        m_levelEndElapsed += dt;
+        if (m_levelEndElapsed >= 3.0f)
+        {
+            m_powerMgr.Clear();
+            SaveGame::NextRound();
+            if (SaveGame::round > LAST_LEVEL)
+            {
+                Engine::SetState("menu");
+            }
+            else
+            {
+                Engine::SetState("intro");
+            }
+        }
+    }
+    else
+    {
+        World::Get().Update(dt);
+        if (World::Get().LevelCleared())
+        {
+            m_levelEndElapsed = 0.0f;
+            m_levelEnded = true;
+        }
+        else
+        {
+            m_ballMgr.Update(dt);
+            m_powerMgr.Update(dt);
+            m_laserMgr.Update(dt);
+
+            if (m_warpDoorOpen)
+            {
+                m_warpDoor.Update(dt);
+            }
+        }
+    }
+}
+
+void Game::OnRender()
+{
+    Engine::DrawTexture(m_background, PLAYGROUND_OFFSET_X, 0);
+    Engine::DrawTexture(m_borders, PLAYGROUND_OFFSET_X, 0);
+
+    m_warpDoor.Render({ 777.0f, 827.0f, 31.0f, 102.0f });
+
+    World::Get().Render();
+    m_ballMgr.Render();
+    m_powerMgr.Render();
+    m_laserMgr.Render();
+
+    // HACK: Hide the ship behind a black square when warping out of the level
+    Engine::FillRect(807.0f, 827.0f, 100.0f, 100.0f, NColor(0, 0, 0, 255));
+    RenderUI();
+}
+
+void Game::OnExit()
+{
+    m_warpDoorOpen = false;
+
+    World::Get().Clear();
+    m_ballMgr.Destroy();
+    World::Get().OnBlockDestroyed.Clear();
+}
+
+void Game::OnWarpedOut()
+{
+    LOG(LL_DEBUG, "Warped out");
+}
+
+void Game::ChooseBackground(int level)
+{
+    m_borders = Engine::LoadTexture("Assets/Images/borders.png");
+
+    switch (level % 4)
     {
     case 0:
         m_background = Engine::LoadTexture("Assets/Images/bg01.png");
@@ -57,263 +117,23 @@ void Game::OnEnter()
         m_background = Engine::LoadTexture("Assets/Images/bg04.png");
         break;
     };
+}
 
-#if SHOW_MOCK_GAMEPLAY
-    m_mockBackground = Engine::LoadTexture("Assets/Design/GameplayTransition.png");;
-#endif
-
-    m_borders = Engine::LoadTexture("Assets/Images/borders.png");
-
-    m_grid.Initialize(GRID_WIDTH, GRID_HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT);
-    m_grid.SetOffset(PLAYGROUND_OFFSET_X + GRID_OFFSET_X, GRID_OFFSET_Y);
-    m_grid.Load(levelToLoad);
-
-    // TODO (REVIEW) : do we need to load on every OnEnter ?
-    m_warpDoor.Init("Assets/Images/warp.png", 4, 32, 102);
-    m_warpDoor.AddClip("open", 1, 3, 0.2f);
-    m_warpDoor.AddClip("close", 0, 1, 0.0f);
-    m_warpDoor.Play("close", false);
-
-    m_topDoorA.Init("Assets/Images/topdoor.png", 4, 48, 16);
-    m_topDoorA.AddClip("open", 0, 4, 0.2f);
-    m_topDoorA.AddClip("open_idle", 3, 1, 0.0f);
-    m_topDoorA.AddClip("close", 4, 4, 0.2f);
-    m_topDoorA.AddClip("close_idle", 7, 1, 0.0f);
-
-    m_topDoorB.Init("Assets/Images/topdoor.png", 4, 48, 16);
-    m_topDoorB.AddClip("open", 0, 4, 0.5f);
-    m_topDoorB.AddClip("open_idle", 3, 1, 0.0f);
-    m_topDoorB.AddClip("close", 4, 4, 0.5f);
-    m_topDoorB.AddClip("close_idle", 7, 1, 0.0f);
-
-    m_explosion.Init("Assets/Images/explosion.png", 5, 32, 32);
-    m_explosion.AddClip("play", 0, 5, 0.2f);
-
+void Game::LoadUIElements(int Level)
+{
+    ChooseBackground(Level);
+    m_whiteFont = Engine::LoadFont("Assets/Fonts/8bitwonder.ttf", "whitefont", 32, NColor::White);
+    m_orangeFont = Engine::LoadFont("Assets/Fonts/8bitwonder.ttf", "redfont", 32, NColor(224, 80, 0, 255));
     m_lifeTexture = Engine::LoadTexture("Assets/Images/life.png");
-
-    m_vausShips = 2;
-    m_elapsedReset = 0.0f;
-    m_paddle.Initialize();
-    m_paddle.OnLaserShotDelegate.Clear();
-    m_paddle.OnLaserShotDelegate.Bind(this, &Game::OnLaserShot);
-    m_paddle.OnExitLevelDelegate.Clear();
-    m_paddle.OnExitLevelDelegate.Bind(this, &Game::OnExitLevel);
-    m_warpDoorOpen = false;
-
-    Ball* firstBall = AddBall(BALL_START_X, BALL_START_Y);
-    SetGameSpeed(500.0f);
-    firstBall->SetAngle(SHARP_ANGLE);
-    firstBall->ChangeDirection(0, -1);
-
-    m_explosionActive = false;
-    m_playerStartElapsed = 0.0f;
-    m_taskMgr2.Add(this, &Game::TaskPlayerStart);
-
-#if SKIP_PLAYER_READY
-    m_taskMgr.Clear();
-    m_playing = true;
-    m_PlayerStart = false;
-#else
-    Engine::PlaySFX(m_playerStartSFX);
-    m_PlayerStart = true;
-#endif
 }
 
-void Game::OnUpdate(float dt)
+void Game::RenderUI()
 {
-    if (Engine::GetKeyDown(KEY_DEBUG))
-    {
-        m_SpawnDebrisPhase = 0;
-        m_SpawnDebrisElapsed = 0.0f;
-        //m_taskMgr.Add(this, &Game::TaskSpawnDebris);
-        m_taskMgr2.Add(this, &Game::TaskSpawnDebris);
-    }
-
-    if (m_playing)
-    {
-        m_grid.Update(dt);
-        if (m_grid.Cleared())
-        {
-            m_playing = false;
-            m_taskMgr2.Add(this, &Game::TaskLevelCleared);
-        }
-        else
-        {
-            if (m_warpDoorOpen)
-            {
-                m_paddle.Update(dt, LEFT_WALL_X, static_cast<float>(SCREEN_WIDTH));
-            }
-            else
-            {
-                m_paddle.Update(dt, LEFT_WALL_X, RIGHT_WALL_X);
-            }
-
-            for (Ball* ball : m_activeBalls)
-            {
-                ball->Update(dt, m_bounds, m_grid);
-                m_paddle.CheckCollisionWith(ball);
-            }
-
-            if (m_activateLasers.size() > 0)
-            {
-                std::vector<Laser*>::iterator it = m_activateLasers.begin();
-                while (it != m_activateLasers.end())
-                {
-                    Laser* current = *it;
-                    current->Update(dt);
-
-                    bool collides = current->CheckBallCollisionWithGrid(m_grid);
-
-                    Rect<float> transform;
-                    current->GetTransform(&transform);
-
-                    if (transform.y < TOP_WALL_Y || collides)
-                    {
-                        it = m_activateLasers.erase(it);
-                    }
-                    else
-                    {
-                        it++;
-                    }
-                }
-            }
-
-            UpdateCapsules(dt);
-
-            if (m_warpDoorOpen)
-            {
-                m_warpDoor.Update(dt);
-            }
-
-            auto it = m_activeDebris.begin();
-            while (it != m_activeDebris.end())
-            {
-                (*it)->Update(dt, m_bounds, m_grid, m_paddle);
-                Rect<float> debrisTransform;
-                (*it)->GetTransform(&debrisTransform);
-
-                bool deleted = false;
-
-#if !DEBRIS_IMMUNE_FROM_BALL
-                for (Ball* ball : m_activeBalls)
-                {
-                    if (ball->CheckCollisionWithRect(debrisTransform))
-                    {
-                        it = m_activeDebris.erase(it);
-                        deleted = true;
-                        break;
-                    }
-                }
-#endif
-
-                if (!deleted)
-                {
-                    auto laserIt = m_activateLasers.begin();
-                    while (laserIt != m_activateLasers.end())
-                    {
-                        Rect<float> laserTransform;
-                        (*laserIt)->GetTransform(&laserTransform);
-                        if (Engine::CheckRects(debrisTransform, laserTransform))
-                        {
-                            it = m_activeDebris.erase(it);
-                            laserIt = m_activateLasers.erase(laserIt);
-                            deleted = true;
-                            break;
-                        }
-                        else
-                        {
-                            ++laserIt;
-                        }
-                    }
-                }
-
-                if (!deleted)
-                {
-                    Rect<float> paddleTransform;
-                    m_paddle.GetTransform(&paddleTransform);
-                    if (Engine::CheckRects(debrisTransform, paddleTransform))
-                    {
-                        it = m_activeDebris.erase(it);
-                        deleted = true;
-                    }
-                }
-
-                if (!deleted)
-                {
-                    it++;
-                }
-                else
-                {
-                    // TODO (REVIEW) : Add position to animation instead of using a transform ??
-                    m_explosion.Play("play", false);
-                    m_explosionActive = true;
-                    m_explosionTransform.Set(debrisTransform.x, debrisTransform.y, debrisTransform.w, debrisTransform.w);
-                    //m_taskMgr.Add(this, &Game::TaskPlayExplosion);
-                    m_taskMgr2.Add(this, &Game::TaskPlayExplosion);
-                }
-            }
-
-            m_topDoorB.Update(dt);
-            m_explosion.Update(dt);
-        }
-    }
-
-    //m_taskMgr.Update(dt);
-    m_taskMgr2.Update(dt);
-}
-
-void Game::OnRender()
-{
-#if SHOW_GAME_BACKGROUND
-    Engine::DrawTexture(m_background, PLAYGROUND_OFFSET_X, 0);
-#endif
-
-#if SHOW_GAME_BORDERS
-    Engine::DrawTexture(m_borders, PLAYGROUND_OFFSET_X, 0);
-#endif
-
-#if SHOW_MOCK_GAMEPLAY
-    Engine::DrawTexture(m_mockBackground, 0, 0, NColor(255, 255, 255, 50));
-#endif
-
-    m_warpDoor.Render({ 777.0f, 827.0f, 31.0f, 102.0f });
-
-    m_topDoorA.Render({ 201, 0, 98.0f, 34.0f });
-    m_topDoorB.Render({ 553, 0, 98.0f, 34.0f });
-
-    m_grid.Render();
-    m_paddle.Render();
-
-    for (Ball* ball : m_activeBalls)
-    {
-        ball->Render();
-    }
-
-    for (Capsule* capsule : m_activeCapsules)
-    {
-        capsule->Render();
-    }
-
-    for (Laser* laser : m_activateLasers)
-    {
-        laser->Render();
-    }
-
-    for (Debris* debris : m_activeDebris)
-    {
-        debris->Render();
-    }
-
-    if (m_explosionActive)
-    {
-        m_explosion.Render(m_explosionTransform);
-    }
-
-    if (m_PlayerStart)
-    {
-        Engine::DrawString("PLAYER 1", m_whiteFont, 300.f, 690.0f);
-        Engine::DrawString("READY", m_whiteFont, 330.f, 760.0f);
-    }
+    /// if (m_PlayerStart)
+    /// {
+    ///     Engine::DrawString("PLAYER 1", m_whiteFont, 300.f, 690.0f);
+    ///     Engine::DrawString("READY", m_whiteFont, 330.f, 760.0f);
+    /// }
 
     Engine::DrawString("1UP", m_orangeFont, 805.0f, 210.0f);
     Engine::DrawString(std::to_string(SaveGame::score), m_whiteFont, 833.0f, 245.0f);
@@ -332,536 +152,48 @@ void Game::OnRender()
         float offsetY = static_cast<float>(y) * 30.0f;
         Engine::DrawTexture(m_lifeTexture, 810.0f + offsetX, 450.0f + offsetY);
     }
-
-#if SHOW_DEBUG_GAME_BOUNDARY
-    Engine::DrawLine(LEFT_WALL_X, TOP_WALL_Y, LEFT_WALL_X, BOTTOM_WALL_Y, NColor::LightGreen);
-    Engine::DrawLine(RIGHT_WALL_X, TOP_WALL_Y, RIGHT_WALL_X, BOTTOM_WALL_Y, NColor::LightGreen);
-    Engine::DrawLine(LEFT_WALL_X, TOP_WALL_Y, RIGHT_WALL_X, TOP_WALL_Y, NColor::LightGreen);
-#endif
 }
 
-void Game::OnExit()
+void Game::OnBlockDestroyed(const BlockEvent& blockEvent)
 {
-    m_warpDoorOpen = false;
-    m_playing = false;
-    m_activePower = nullptr;
+    LOG(LL_DEBUG, "Block destroyed");
 
-    for (Capsule* c : m_activeCapsules)
-    {
-        delete c;
-    }
-    m_activeCapsules.clear();
-
-    for (Laser* l : m_activateLasers)
-    {
-        delete l;
-    }
-    m_activateLasers.clear();
-
-    for (Ball* b : m_activeBalls)
-    {
-        delete b;
-    }
-    m_activeBalls.clear();
-
-    for (Debris* d : m_activeDebris)
-    {
-        delete d;
-    }
-    m_activeDebris.clear();
-    m_taskMgr2.Clear();
+    int ballCount = m_ballMgr.Count();
+    m_powerMgr.TrySpawnCapsule(ballCount, blockEvent.x, blockEvent.y, m_warpDoorOpen);
 }
 
-Ball* Game::AddBall(float x, float y)
+void Game::OnBottomReached(const BallEvent& ballEvent)
 {
-    Ball* newBall = new Ball(x, y);
-    newBall->Initialize();
-    newBall->OnBlockDestroyed.Bind(this, &Game::OnBlockDestroyed);
-    newBall->OnBottomReached.Bind(this, &Game::OnBottomReached);
-    m_activeBalls.push_back(newBall);
-    return newBall;
+    LOG(LL_DEBUG, "Bottom reached");
 }
 
-void Game::SetGameSpeed(float speed)
+void Game::OnActivateSlowPower(const Event& powerEvent)
 {
-    m_gameSpeed = speed;
-    for (Ball* ball : m_activeBalls)
-    {
-        ball->SetSpeed(m_gameSpeed);
-    }
+    m_ballMgr.SlowDown();
 }
 
-float Game::GetGameSpeed() const
+void Game::OnActivateDisruptPower(const Event& powerEvent)
 {
-    return m_gameSpeed;
+    m_ballMgr.SpawnBall(2);
 }
 
-void Game::AddVaus()
-{
-    m_vausShips++;
-}
-
-void Game::RemoveVaus()
-{
-    m_vausShips--;
-}
-
-void Game::ActivateLaser(Capsule* capsule)
-{
-    CapsuleState* newCapsuleState = new CapsuleState(capsule);
-    m_taskMgr2.Add(&m_paddle, newCapsuleState , &Paddle::TaskActivateLaser);
-}
-
-void Game::DeactivateLaser(Capsule* capsule)
-{
-    CapsuleState* newCapsuleState = new CapsuleState(capsule);
-    m_taskMgr2.Add(&m_paddle, newCapsuleState , &Paddle::TaskDeactivateLaser);
-}
-
-void Game::ExpandVaus()
-{
-    m_taskMgr2.Add(&m_paddle, &Paddle::TaskExpandShip);
-}
-
-
-void Game::StandardVaus()
-{
-    m_taskMgr2.Add(&m_paddle, &Paddle::TaskContractShip);
-}
-
-void Game::ActivateCatch(bool activate)
-{
-    m_paddle.SetSticky(activate);
-}
-
-void Game::OpenTheWarpDoors()
+void Game::OnActivateBreakPower(const Event& powerEvent)
 {
     m_warpDoorOpen = true;
     m_warpDoor.Play("open", true);
 }
 
-void Game::CloseTheWarpDoors()
-{
-    m_warpDoorOpen = false;
-    m_warpDoor.Play("close", false);
-}
-
-bool Game::GetCurrentBallPosition(float* x, float* y)
-{
-    if (m_activeBalls.size() > 0)
-    {
-        Rect<float> m_ballTransform;
-        m_activeBalls[0]->GetTransform(&m_ballTransform);
-        *x = m_ballTransform.x;
-        *y = m_ballTransform.y;
-        return true;
-    }
-
-    LOG(LL_WARNING, "Asking for the ball's position when there are none");
-    return false;
-}
-
-void Game::OnBlockDestroyed(const BallEvent& ballEvent)
-{
-    static int capsuleCount = 0;
-    int activeCapsule = static_cast<int>(m_activeCapsules.size());
-
-    if (activeCapsule == 0)
-    {
-        int ballCount = static_cast<int>(m_activeBalls.size());
-        if (Capsule::CanSpawn(ballCount))
-        {
-            Capsule* newCapsule = Capsule::Spawn(m_activePower, ballEvent.x, ballEvent.y);
-            if (newCapsule)
-            {
-                capsuleCount++;
-                m_activeCapsules.push_back(newCapsule);
-            }
-        }
-    }
-}
-
-void Game::OnBottomReached(const BallEvent& ballEvent)
-{
-#if INVINSIBLE
-    return;
-#endif
-
-    auto it = m_activeBalls.begin();
-    while (it != m_activeBalls.end())
-    {
-        if (*it == ballEvent.ball)
-        {
-            it = m_activeBalls.erase(it);
-        }
-        else
-        {
-            ++it;
-        }
-    }
-
-    if (m_activeBalls.size() <= 0)
-    {
-        SaveGame::life--;
-        if (SaveGame::life <= 0)
-        {
-            // Game Over
-            SaveGame::life = 0;
-            SaveGame::CheckHighScore();
-            Engine::SetState("title");
-        }
-        else
-        {
-            if (m_activePower)
-            {
-                m_activePower->Deactivate(this);
-                m_activePower = nullptr;
-            }
-
-            for (auto& activeCapsule : m_activeCapsules)
-            {
-                delete activeCapsule;
-            }
-            m_activeCapsules.clear();
-
-            Engine::SetState("intro");
-            // m_taskMgr.Add(this, &Game::TaskResetBall);
-        }
-    }
-}
-
-void Game::UpdateCapsules(float dt)
-{
-    // TODO (REVIEW) : too much loop for the same result
-    for (Capsule* capsule : m_activeCapsules)
-    {
-        capsule->Update(dt);
-
-        Rect<float> capsuleTransform;
-        capsule->GetTransform(&capsuleTransform);
-        if (capsuleTransform.y > BOTTOM_WALL_Y + BLOCK_HEIGHT)
-        {
-            m_destroyedCapsules.push_back(capsule);
-        }
-
-        Rect<float> paddleTransfrom;
-        m_paddle.GetTransform(&paddleTransfrom);
-        if (Engine::CheckRects(
-            paddleTransfrom.x, paddleTransfrom.y, paddleTransfrom.w, paddleTransfrom.h,
-            capsuleTransform.x, capsuleTransform.y, capsuleTransform.w, capsuleTransform.h))
-        {
-            //ActivatePower(capsule);
-            PowerTask* taskState = new PowerTask();
-            taskState->CurrentPower = m_activePower;
-            taskState->NextPower = capsule;
-            m_taskMgr2.Add(this, taskState, &Game::TaskActivatePower);
-            m_destroyedCapsules.push_back(capsule);
-        }
-    }
-
-    for (Capsule* capsule : m_destroyedCapsules)
-    {
-        std::vector<Capsule*>::iterator it = m_activeCapsules.begin();
-        while (it != m_activeCapsules.end())
-        {
-            if (capsule == *it)
-            {
-                it = m_activeCapsules.erase(it);
-            }
-            else
-            {
-                ++it;
-            }
-        }
-    }
-
-    m_destroyedCapsules.clear();
-}
-
-//void Game::ActivatePower(Capsule* capsule)
-//{
-//    if (m_activePower)
-//    {
-//        m_activePower->Deactivate(this);
-//    }
-//
-//    m_activePower = capsule;
-//    m_activePower->Activate(this);
-//}
-
-bool Game::TaskActivatePower(float dt, PowerTask* state)
-{
-    if (state)
-    {
-        if (state->PowerPhase == 0)
-        {
-            if (state->CurrentPower)
-            {
-                state->CurrentPower->Deactivate(this);
-            }
-
-            state->PowerPhase++;
-        }
-        else if (state->PowerPhase == 1)
-        {
-            if (state->CurrentPower)
-            {
-                if (!state->CurrentPower->IsActive())
-                {
-                    state->PowerPhase++;
-                }
-            }
-            else
-            {
-                state->PowerPhase++;
-            }
-        }
-        else if(state->PowerPhase == 2)
-        {
-            if (state->NextPower)
-            {
-                state->NextPower->Activate(this);
-            }
-
-            state->PowerPhase++;
-        }
-        else if (state->PowerPhase == 3)
-        {
-            if (state->NextPower)
-            {
-                if (state->NextPower->IsActive())
-                {
-                    m_activePower = state->NextPower;
-                    state->PowerPhase++;
-                }
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-bool Game::TaskResetBall(float dt, CTaskState* state)
-{
-    m_elapsedReset += dt;
-    if (m_elapsedReset >= 2.0f)
-    {
-        m_elapsedReset = 0.0f;
-        Ball* newBall = AddBall(BALL_START_X, BALL_START_Y);
-        SetGameSpeed(500.0f);
-        newBall->SetAngle(SHARP_ANGLE);
-        newBall->ChangeDirection(0, -1);
-        return false;
-    }
-
-    return true;
-}
-
-bool Game::TaskLevelCleared(float dt, CTaskState* state)
-{
-    m_elapsedEndRound += dt;
-    if (m_elapsedEndRound >= 3.0f)
-    {
-        SaveGame::NextRound();
-        if (m_grid.LastLevel())
-        {
-            Engine::SetState("title");
-        }
-        else
-        {
-            Engine::SetState("intro");
-        }
-
-        return false;
-    }
-
-    return true;
-}
-
-//bool Game::TaskSpawnDebris(float dt, CTaskState* state)
-//{
-//    /*switch (m_SpawnDebrisPhase)
-//    {
-//    case 0:
-//    {
-//        m_topDoorA.Play("open", false);
-//        m_SpawnDebrisPhase++;
-//        break;
-//    }
-//
-//    case 1:
-//    {
-//        if (!m_topDoorA.Update(dt))
-//        {
-//            m_topDoorA.Play("open_idle", false);
-//            m_SpawnDebrisPhase++;
-//        }
-//        break;
-//    }
-//
-//    case 2:
-//    {
-//        Debris* newDebris = new Debris(0);
-//        newDebris->Initialize();
-//        newDebris->SetPosition(225.0f, 10.0f);
-//        m_activeDebris.push_back(newDebris);
-//        m_SpawnDebrisElapsed = 0.0f;
-//        m_SpawnDebrisPhase++;
-//        break;
-//    }
-//
-//    case 3:
-//    {
-//        m_SpawnDebrisElapsed += dt;
-//        if (m_SpawnDebrisElapsed >= 0.3f)
-//        {
-//            m_SpawnDebrisPhase++;
-//        }
-//        break;
-//    }
-//
-//    case 4:
-//    {
-//        m_topDoorA.Play("close", false);
-//        m_SpawnDebrisPhase++;
-//        break;
-//    }
-//
-//    case 5:
-//    {
-//        if (!m_topDoorA.Update(dt))
-//        {
-//            m_topDoorA.Play("close_idle", false);
-//            return false;
-//        }
-//    }
-//    }
-//
-//    return true;*/
-//
-//    return false;
-//}
-
-bool Game::TaskSpawnDebris(float dt, SpawnDebrisState* state)
-{
-    CHECK(state);
-
-    switch (state->spawnDebrisPhase)
-    {
-    case 0:
-    {
-        m_topDoorA.Play("open", false);
-        state->spawnDebrisPhase++;
-        break;
-    }
-
-    case 1:
-    {
-        if (!m_topDoorA.Update(dt))
-        {
-            m_topDoorA.Play("open_idle", false);
-            state->spawnDebrisPhase++;
-        }
-        break;
-    }
-
-    case 2:
-    {
-        Debris* newDebris = new Debris(0);
-        newDebris->Initialize();
-        newDebris->SetPosition(225.0f, 10.0f);
-        m_activeDebris.push_back(newDebris);
-        m_SpawnDebrisElapsed = 0.0f;
-        state->spawnDebrisPhase++;
-        break;
-    }
-
-    case 3:
-    {
-        state->spawnDebrisElapsed += dt;
-        if (state->spawnDebrisElapsed >= 0.3f)
-        {
-            state->spawnDebrisElapsed = 0.0f;
-            state->spawnDebrisPhase++;
-        }
-        break;
-    }
-
-    case 4:
-    {
-        m_topDoorA.Play("close", false);
-        state->spawnDebrisPhase++;
-        break;
-    }
-
-    case 5:
-    {
-        if (!m_topDoorA.Update(dt))
-        {
-            m_topDoorA.Play("close_idle", false);
-            return false;
-        }
-    }
-    }
-
-    return true;
-}
-
-bool Game::TaskPlayExplosion(float dt, CTaskState* state)
-{
-    if (!m_explosion.Update(dt))
-    {
-        m_explosionActive = false;
-        return false;
-    }
-
-    return true;
-}
-
-//bool Game::TaskPlayExplosion(float dt)
-//{
-//    //if (!m_explosion.Update(dt))
-//    //{
-//    //    m_explosionActive = false;
-//    //    return false;
-//    //}
-//
-//    //return true;
-//
-//    return false;
-//}
-
-bool Game::TaskPlayerStart(float dt, CTaskState* state)
-{
-    m_playerStartElapsed += dt;
-    if (m_playerStartElapsed >= 3)
-    {
-        m_PlayerStart = false;
-        m_playing = true;
-        return false;
-    }
-    return true;
-}
-
 void Game::OnLaserShot(const LaserEvent& laserEvent)
 {
-    Laser* laserA = new Laser(laserEvent.leftStartX, laserEvent.leftStartY, laserEvent.startV);
-    laserA->Initialize();
-
-    Laser* laserB = new Laser(laserEvent.rightStartX, laserEvent.rightStartY, laserEvent.startV);
-    laserB->Initialize();
-
-    m_activateLasers.push_back(laserA);
-    m_activateLasers.push_back(laserB);
+    m_laserMgr.SpawnLaser(laserEvent.leftStartX, laserEvent.leftStartY,
+        laserEvent.rightStartX, laserEvent.rightStartY);
 }
 
-void Game::OnExitLevel(const PaddleEvent& paddleEvent)
+void Game::LoadDoors()
 {
     m_warpDoorOpen = false;
-    m_playing = false;
-    m_taskMgr2.Add(this, &Game::TaskLevelCleared);
+    m_warpDoor.Init("Assets/Images/warp.png", 4, 32, 102);
+    m_warpDoor.AddClip("open", 1, 3, 0.2f);
+    m_warpDoor.AddClip("close", 0, 1, 0.0f);
+    m_warpDoor.Play("close", false);
 }

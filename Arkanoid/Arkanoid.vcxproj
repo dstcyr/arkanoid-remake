@@ -152,32 +152,56 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Sources\AnimatedTile.cpp" />
     <ClCompile Include="Sources\Arkanoid.cpp" />
     <ClCompile Include="Sources\Ball.cpp" />
-    <ClCompile Include="Sources\Capsule.cpp" />
+    <ClCompile Include="Sources\BallManager.cpp" />
+    <ClCompile Include="Sources\BreakPower.cpp" />
     <ClCompile Include="Sources\Debris.cpp" />
+    <ClCompile Include="Sources\DisruptPower.cpp" />
+    <ClCompile Include="Sources\ExpandPower.cpp" />
     <ClCompile Include="Sources\Game.cpp" />
-    <ClCompile Include="Sources\Grid.cpp" />
+    <ClCompile Include="Sources\Intro.cpp" />
     <ClCompile Include="Sources\Laser.cpp" />
-    <ClCompile Include="Sources\LevelData.cpp" />
-    <ClCompile Include="Sources\LevelIntro.cpp" />
-    <ClCompile Include="Sources\Paddle.cpp" />
+    <ClCompile Include="Sources\LaserManager.cpp" />
+    <ClCompile Include="Sources\LaserPower.cpp" />
+    <ClCompile Include="Sources\Menu.cpp" />
+    <ClCompile Include="Sources\MovingObject.cpp" />
+    <ClCompile Include="Sources\PlayerPower.cpp" />
+    <ClCompile Include="Sources\Power.cpp" />
+    <ClCompile Include="Sources\PowerManager.cpp" />
     <ClCompile Include="Sources\SaveGame.cpp" />
-    <ClCompile Include="Sources\Title.cpp" />
+    <ClCompile Include="Sources\Ship.cpp" />
+    <ClCompile Include="Sources\SlowPower.cpp" />
+    <ClCompile Include="Sources\StaticTile.cpp" />
+    <ClCompile Include="Sources\Tile.cpp" />
+    <ClCompile Include="Sources\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Sources\AnimatedTile.h" />
     <ClInclude Include="Sources\Ball.h" />
-    <ClInclude Include="Sources\Capsule.h" />
+    <ClInclude Include="Sources\BallManager.h" />
+    <ClInclude Include="Sources\BreakPower.h" />
     <ClInclude Include="Sources\Config.h" />
     <ClInclude Include="Sources\Debris.h" />
+    <ClInclude Include="Sources\DisruptPower.h" />
+    <ClInclude Include="Sources\ExpandPower.h" />
     <ClInclude Include="Sources\Game.h" />
-    <ClInclude Include="Sources\Grid.h" />
+    <ClInclude Include="Sources\Intro.h" />
     <ClInclude Include="Sources\Laser.h" />
-    <ClInclude Include="Sources\LevelData.h" />
-    <ClInclude Include="Sources\LevelIntro.h" />
-    <ClInclude Include="Sources\Paddle.h" />
+    <ClInclude Include="Sources\LaserManager.h" />
+    <ClInclude Include="Sources\LaserPower.h" />
+    <ClInclude Include="Sources\Menu.h" />
+    <ClInclude Include="Sources\MovingObject.h" />
+    <ClInclude Include="Sources\PlayerPower.h" />
+    <ClInclude Include="Sources\Power.h" />
+    <ClInclude Include="Sources\PowerManager.h" />
     <ClInclude Include="Sources\SaveGame.h" />
-    <ClInclude Include="Sources\Title.h" />
+    <ClInclude Include="Sources\Ship.h" />
+    <ClInclude Include="Sources\SlowPower.h" />
+    <ClInclude Include="Sources\StaticTile.h" />
+    <ClInclude Include="Sources\Tile.h" />
+    <ClInclude Include="Sources\World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

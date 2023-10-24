@@ -1,46 +1,38 @@
 #pragma once
+#include "MovingObject.h"
 #include "Config.h"
-#include "Vec2D.h"
-#include "Rect.h"
 #include "Delegate.h"
 
-class Grid;
 class Ball;
 
 struct BallEvent : public Event
 {
     BallEvent() : BallEvent(nullptr, 0.0f, 0.0f) {}
     BallEvent(Ball* ball, float x, float y) : ball(ball), x(x), y(y) {}
-    Ball* ball;
-    float x;
-    float y;
+    Ball* ball = nullptr;
+    float x = 0.0f;
+    float y = 0.0f;
 };
 
-class Ball
+class Ball : public MovingObject
 {
 public:
     Ball();
     Ball(float x, float y);
     void Initialize();
-    void Update(float dt, const Rect<float>& bounds, Grid& grid);
+    void Update(float dt);
     void Render();
     void SetAngle(float angle);
-    void GetTransform(Rect<float>* transform);
-    void GetVelocity(Vec2D* velocity);
+    float GetAngle() const;
     void SetSpeed(float speed);
-    void ChangeDirection(int h, int v);
-    void SetPosition(float x, float y);
-    bool CheckCollisionWithRect(const Rect<float>& rect);
 
-    CDelegate OnBlockDestroyed;
     CDelegate OnBottomReached;
+    CDelegate OnBounced;
 
 private:
-    Rect<float> m_transform;
-    Vec2D m_velocity;
-    size_t m_ballTexture;
-    size_t m_brickHitSound;
+    size_t m_ballTexture = 0;
 
-    void CheckBallCollisionWithBounds(const Rect<float>& bounds, float* px, float* py);
-    bool CheckBallCollisionWithGrid(Grid& grid, float px, float py);
+    bool CheckCollisionWithBounds(float* px, float* py);
+    bool CheckCollisionWithShip(float* px, float* py);
+    bool CheckCollisionWithGrid(float* px, float* py);
 };

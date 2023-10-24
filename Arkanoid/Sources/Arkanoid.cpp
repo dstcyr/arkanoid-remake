@@ -7,10 +7,10 @@
 #include <string>
 #include "File.h"
 #include "Log.h"
-#include "Title.h"
-#include "LevelIntro.h"
-#include "Game.h"
 #include "Config.h"
+#include "Menu.h"
+#include "Intro.h"
+#include "Game.h"
 
 #if CHECK_MEMORY_LEAKS
 #pragma comment(lib, "C:\\vld\\lib\\Win64\\vld.lib")
@@ -38,8 +38,8 @@ INT WINAPI WinMain(HINSTANCE _In_ hInst, HINSTANCE _In_opt_ hPrev, PSTR _In_ cmd
 #endif
 
     StateMachine fsm;
-    fsm.Add("title", new Title());
-    fsm.Add("intro", new LevelIntro());
+    fsm.Add("menu", new Menu());
+    fsm.Add("intro", new Intro());
     fsm.Add("game", new Game());
 
     Engine::Initialize(title.c_str(), SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -49,7 +49,7 @@ INT WINAPI WinMain(HINSTANCE _In_ hInst, HINSTANCE _In_opt_ hPrev, PSTR _In_ cmd
 #elif START_IN_INTRO
     fsm.SetState("intro");
 #else
-    fsm.SetState("title");
+    fsm.SetState("menu");
 #endif
 
     Engine::EnterGameLoop(&fsm);

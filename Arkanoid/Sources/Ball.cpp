@@ -1,45 +1,51 @@
 #include "Ball.h"
 #include "Engine.h"
-#include "Grid.h"
 #include "Log.h"
-#include "MathUtils.h"
+#include "Ship.h"
+#include "World.h"
 #include "Collision.h"
 
-Ball::Ball() : Ball(400.0f, 650.0f)
+Ball::Ball() : Ball(BALL_START_X, BALL_START_Y)
 {
 }
 
 Ball::Ball(float x, float y)
 {
-    m_transform = Rect<float>(x, y, 16.0f, 16.0f);
-    m_velocity = Vec2D(0.0f, 0.0f);
-    m_ballTexture = 0;
-    m_brickHitSound = 0;
+    m_transform.x = x;
+    m_transform.y = y;
+    m_transform.w = 16.0f;
+    m_transform.h = 16.0f;
 }
 
 void Ball::Initialize()
 {
     m_ballTexture = Engine::LoadTexture("Assets/Images/Ball.png");
-    m_brickHitSound = Engine::LoadSound("Assets/Audio/BrickHit.wav");
-    SetAngle(SHARP_ANGLE);
 }
 
-void Ball::Update(float dt, const Rect<float>& bounds, Grid& grid)
+void Ball::Update(float dt)
 {
     // prediction for the new position:
     float pX = m_transform.x + m_velocity.x * dt;
     float pY = m_transform.y + m_velocity.y * dt;
 
     // check bounds collision and update the predicted position:
-    CheckBallCollisionWithBounds(bounds, &pX, &pY);
-
-    // if the predicted position does not hit a block, move the ball
-    // to that position:
-    if (!CheckBallCollisionWithGrid(grid, pX, pY))
+    if (!CheckCollisionWithBounds(&pX, &pY))
     {
-        m_transform.x = pX;
-        m_transform.y = pY;
+        float collided = CheckCollisionWithShip(&pX, &pY);
+
+        if (!collided)
+        {
+            collided = CheckCollisionWithGrid(&pX, &pY);
+        }
+
+        if (collided)
+        {
+            OnBounced.Invoke<BallEvent>(this, pX, pY);
+        }
     }
+
+    m_transform.x = pX;
+    m_transform.y = pY;
 }
 
 void Ball::Render()
@@ -47,206 +53,199 @@ void Ball::Render()
     Engine::DrawTexture(m_ballTexture, m_transform);
 
 #if SHOW_BALL_DEBUG
-    Engine::FillRect(m_transform.x, m_transform.y, m_transform.w, m_transform.h, NColor::Yellow);
-#endif
-
-#if SHOW_BALL_DIRECTION_LINE
     Engine::DrawLine(m_transform.x + m_transform.w / 2.0f, 0.0f, m_transform.x + m_transform.w / 2.0f, 1000.0f, NColor::LightLavender);
     Engine::DrawLine(0.0f, m_transform.y + m_transform.h / 2.0f, 1500.0f, m_transform.y + m_transform.h / 2.0f, NColor::LightLavender);
+    Engine::DrawRect(m_transform.x, m_transform.y, m_transform.w, m_transform.h, NColor(0, 255, 0, 255));
 #endif
 }
 
 void Ball::SetAngle(float angle)
 {
+    float length = m_velocity.Length();
+    if (length == 0.0f)
+    {
+        m_velocity.Set(0.0f, 1.0f);
+        length = 1.0f;
+    }
+
+    m_velocity.Normalize();
     m_velocity.SetRotation(angle);
-}
-
-void Ball::ChangeDirection(int h, int v)
-{
-    h = Engine::Clamp(h, -1, 1);
-    v = Engine::Clamp(v, -1, 1);
-
-    if (h != 0)
-    {
-        m_velocity.x = h * std::abs(m_velocity.x);
-    }
-    else
-    {
-        // m_velocity.x = -m_velocity.x;
-    }
-
-    if (v != 0)
-    {
-        m_velocity.y = v * std::abs(m_velocity.y);
-    }
-    else
-    {
-        // m_velocity.y = -m_velocity.y;
-    }
-}
-
-void Ball::SetPosition(float x, float y)
-{
-    m_transform.x = x;
-    m_transform.y = y;
-}
-
-void Ball::GetTransform(Rect<float>* transform)
-{
-    *transform = m_transform;
-}
-
-void Ball::GetVelocity(Vec2D* velocity)
-{
-    *velocity = m_velocity;
+    m_velocity *= length;
 }
 
 void Ball::SetSpeed(float speed)
 {
-    Vec2D dir = m_velocity;
-    float magnitude = dir.Length();
-
-    if (magnitude == 0.0f)
-    {
-        m_velocity.x = speed;
-        m_velocity.y = speed;
-        SetAngle(SHARP_ANGLE);
-        return;
-    }
-
-    dir.Normalize();
-
-    m_velocity.x = dir.x * speed;
-    m_velocity.y = dir.y * speed;
+    m_velocity.Normalize();
+    m_velocity *= speed;
 }
 
-void Ball::CheckBallCollisionWithBounds(const Rect<float>& bounds, float* px, float* py)
+float Ball::GetAngle() const
 {
-    float halfWidth = m_transform.w / 2.0f;
-    float halfHeight = m_transform.h / 2.0f;
+    return m_velocity.GetAngle();
+}
 
-    if (*px > bounds.w - halfWidth)
+bool Ball::CheckCollisionWithBounds(float* px, float* py)
+{
+    bool result = false;
+    if (*px > RIGHT_WALL_X - m_transform.w)
     {
-        m_velocity.x = -m_velocity.x;
-        *px = bounds.w - halfWidth;
+        m_velocity.CCW();
+        *px = RIGHT_WALL_X - m_transform.w;
+        result = true;
     }
-    else if (*px < bounds.x)
+    else if (*px < LEFT_WALL_X)
     {
-        m_velocity.x = -m_velocity.x;
-        *px = bounds.x;
+        m_velocity.CCW();
+        *px = LEFT_WALL_X;
+        result = true;
     }
-    
-    if (*py > bounds.h - halfHeight)
+
+    if (*py > BOTTOM_WALL_Y - m_transform.h)
     {
-        m_velocity.y = -m_velocity.y;
-        *py = bounds.h - halfHeight;
+        m_velocity.CW();
+        *py = BOTTOM_WALL_Y - m_transform.h;
+        result = true;
         OnBottomReached.Invoke<BallEvent>(this, *px, *py);
     }
-    else if (*py < bounds.y)
+    else if (*py < TOP_WALL_Y)
     {
-        m_velocity.y = -m_velocity.y;
-        *py = bounds.y;
+        m_velocity.CW();
+        *py = TOP_WALL_Y;
+        result = true;
     }
+
+    return result;
 }
 
-bool Ball::CheckBallCollisionWithGrid(Grid& grid, float px, float py)
+bool Ball::CheckCollisionWithShip(float* px, float* py)
+{
+    // Where the ball hits the paddle dictates how it will bounce off the paddle.
+    // If the ball hits the silver area in the middle, it will bounce off at a sharp angle.
+    // If it hits the red bands near the sides, it will bounce off at a 45 degree angle.
+    // And if it hits the very edges of the paddle, it will bounce off at a very shallow angle.
+    // Use this information to not only keep the ball in play, but to better direct the path
+    // that it takes while you attempt to knock out all of the bricks.
+
+    // The ball initial launch is at 65°
+    // If the ball hit neer the middle of the ship, it's launched at 65°
+    // If the ball hit near the extremities of the ship, it's launched at 45°
+    // If the ball hit near the sides of the ship, it's launched at 20°
+
+    Ship* ship = World::Get().GetShip();
+    CHECK(ship);
+
+    float halfWidth = m_transform.w / 2.0f;
+    float halfHeight = m_transform.h / 2.0f;
+    float centerX = m_transform.x + halfWidth;
+    float centerY = m_transform.y + halfHeight;
+
+    if (CheckCollisionWith(*ship))
+    {
+        ECollisionResult response = ship->GetCollisionResponse(centerX, centerY);
+        switch (response)
+        {
+        case LEFT_SIDE_HIT:
+            m_velocity.SetRotation(-150.0f);
+            break;
+        case RIGHT_SIDE_HIT:
+            m_velocity.SetRotation(-30.0f);
+            break;
+        case LEFT_ZONE_HIT:
+            m_velocity.SetRotation(-135.0f);
+            break;
+        case RIGHT_ZONE_HIT:
+            m_velocity.SetRotation(-45.0f);
+            break;
+        case MIDDLE_HIT:
+            if (m_velocity.x > 0)
+            {
+                m_velocity.SetRotation(-65.0f);
+            }
+            else
+            {
+                m_velocity.SetRotation(-120.0f);
+            }
+            break;
+
+        case LEFT_LOW_HIT:
+            m_velocity.SouthWest();
+            break;
+
+        case RIGHT_LOW_HIT:
+            m_velocity.SouthEast();
+            break;
+        }
+
+        if (response != ECollisionResult::NO_HIT)
+        {
+            // Solve collision penetration
+            Rect<float> m_shipTransform;
+            ship->GetTransform(&m_shipTransform);
+
+            Vec2D dir = m_velocity.GetNormalized();
+            Rect<float> temp(*px, *py, m_transform.w, m_transform.h);
+            float solveSpeed = 1.0f;
+            int pass = 100;
+            while (Engine::CheckRects(temp, m_shipTransform) && pass > 0)
+            {
+                temp.x += dir.x * solveSpeed;
+                temp.y += dir.y * solveSpeed;
+                pass--;
+            }
+
+            *px = temp.x;
+            *py = temp.y;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Ball::CheckCollisionWithGrid(float* px, float* py)
 {
     int hitIndex = 0;
 
     // if there is a collision with blocks in the grid, this function
     // returns the closests id using the distance between both rectangle's
     // centers. The ball can hit only one target at a time:
-    if (grid.CheckCollision(px, py, m_transform.w, m_transform.h, &hitIndex))
+    if (World::Get().CheckCollision(*px, *py, m_transform.w, m_transform.h, &hitIndex))
     {
+        *px = m_transform.x;
+        *py = m_transform.y;
+
 #if USE_SOUNDFX
         Engine::PlaySFX(m_brickHitSound);
 #endif
 
-        bool destroyed = grid.Hit(hitIndex);
+        World::Get().HitTile(hitIndex);
 
         int worldX, worldY;
-        grid.GetWorldPositionFromIndex(hitIndex, &worldX, &worldY);
-
-        if (destroyed)
-        {
-            OnBlockDestroyed.Invoke<BallEvent>(this, static_cast<float>(worldX), static_cast<float>(worldY));
-        }
+        World::Get().GetWorldPositionFromIndex(hitIndex, &worldX, &worldY);
 
         bool bottom = (worldY < m_transform.y + m_transform.h);
-        bool top = (worldY + grid.GetCellHeight() > m_transform.y);
+        bool top = (worldY + World::Get().GetCellHeight() > m_transform.y);
         bool right = (worldX <= m_transform.x + m_transform.w);
-        bool left = (worldX + grid.GetCellWidth() > m_transform.x);
+        bool left = (worldX + World::Get().GetCellWidth() > m_transform.x);
 
-        // TODO (REVIEW) : optimize boolean expression
         // TODO (REVIEW) : see CheckCollisionWithRect... 
-        // 
-        // The ball hits the top of a block
-        if (top && !bottom)
+
+        // The ball hits the top but not the bottom or
+        // The ball hits the bottom but not the top (same goes for left and right)
+        // |   T   |   B   |  T ^ B  |
+        // |-------|-------|---------|
+        // |   0   |   0   |    0    |
+        // |   0   |   1   |    1    |
+        // |   1   |   0   |    1    |
+        // |   1   |   1   |    0    |
+        if (top ^ bottom)
         {
-            m_velocity.y = -m_velocity.y;
+            m_velocity.CW();
         }
 
-        // The ball hits the bottom of a block
-        if (bottom && !top)
+        if (left ^ right)
         {
-            m_velocity.y = -m_velocity.y;
-        }
-
-        // The ball hits a block from the left
-        if (left && !right)
-        {
-            m_velocity.x = -m_velocity.x;
-        }
-
-        // The ball hits a block from the right
-        if (right && !left)
-        {
-            m_velocity.x = -m_velocity.x;
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-bool Ball::CheckCollisionWithRect(const Rect<float>& rect)
-{
-    int hitIndex = 0;
-    if(Engine::CheckRects(m_transform, rect))
-    {
-        float centerX = m_transform.x + (m_transform.w / 2.0f);
-        float centerY = m_transform.y + (m_transform.h / 2.0f);
-
-        bool top = centerY < rect.y;
-        bool bottom = centerY > rect.y + rect.h;
-        bool left = centerX < rect.x;
-        bool right = centerX > rect.x + rect.w;
-
-        // TODO (REVIEW) : optimize boolean expression
-        // 
-        // The ball hits the top of a block
-        if (top && !bottom)
-        {
-            m_velocity.y = -m_velocity.y;
-        }
-
-        // The ball hits the bottom of a block
-        if (bottom && !top)
-        {
-            m_velocity.y = -m_velocity.y;
-        }
-
-        // The ball hits a block from the left
-        if (left && !right)
-        {
-            m_velocity.x = -m_velocity.x;
-        }
-
-        // The ball hits a block from the right
-        if (right && !left)
-        {
-            m_velocity.x = -m_velocity.x;
+            m_velocity.CCW();
         }
 
         return true;

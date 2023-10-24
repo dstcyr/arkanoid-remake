@@ -2,18 +2,17 @@
 #include "Config.h"
 #include "StateMachine.h"
 
-class LevelIntro : public IState
+class Intro : public IState
 {
 public:
-    LevelIntro();
     void OnEnter() override;
     void OnUpdate(float dt) override;
     void OnRender() override;
     void OnExit() override;
 
 private:
-    size_t m_whiteFont;
-    size_t m_orangeFont;
-    float m_elapsedIntro;
-    float m_delayIntro;
+    size_t m_whiteFont = 0;
+    size_t m_orangeFont = 0;
+    float m_elapsedIntro = 0.0f;
+    float m_delayIntro = 2.0f;
 };

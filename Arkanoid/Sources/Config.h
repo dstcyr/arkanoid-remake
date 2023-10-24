@@ -1,7 +1,10 @@
 #pragma once
 
+#define SAFE_DELETE(ptr) if(ptr) { delete ptr; ptr = nullptr; }
+
 const int SCREEN_WIDTH = 1024;
 const int SCREEN_HEIGHT = 962;
+const float SIDE_WIDTH = 8;
 const float SIDE_ZONE_WIDTH = 32;
 const float SHARP_ANGLE = 30.0f;
 const float STEEP_ANGLE = 45.0f;
@@ -24,24 +27,29 @@ const float LASER_HEIGHT = 14;
 const float LASER_SPEED = 800.0f;
 const float BALL_START_X = 400.0f;
 const float BALL_START_Y = 650.0f;
+const float SHIP_START_X = 400.0f;
+const float SHIP_START_Y = 860.0f;
+const float GAME_SPEED = 500.0f;
+const float SLOWDOWN_ITR = 0.5f;
+const float SLOWDOWN_DELAY = 15.0f;
+const int LAST_LEVEL = 35;
 
-#if defined(_DEBUG)
+const int EMPTY_TILE = 0;
+const int HARD_TILE = 9;
+const int GOLD_TILE = 10;
 
 #define SHOW_GAME_BACKGROUND 1
 #define SHOW_GAME_BORDERS 1
 #define CHECK_MEMORY_LEAKS 0
 #define CREATE_DEBUG_CONSOLE 1
 #define PAUSE_CONSOLE_WHEN_CLOSING 0
-#define START_IN_GAME 0
+#define START_IN_GAME 1
 #define START_IN_INTRO 0
 #define SHOW_BALL_DEBUG 0
-#define SHOW_BALL_DIRECTION_LINE 0
 #define SHOW_DEBUG_CAPSULE 0
 #define SHOW_PADDLE_DEBUG 0
 #define SHOW_PADDLE_DEBUG_COLLISION 0
 #define SHOW_PADDLE_DEBUG_ZONES 0
-#define SHOW_DEBUG_GRID_COORD 0
-#define SHOW_DEBUG_GRID_BLOCK 0
 #define SHOW_DEBUG_GRID 0
 #define SHOW_DEBUG_GAME_BOUNDARY 0
 #define USE_SOUNDFX 0
@@ -54,49 +62,19 @@ const float BALL_START_Y = 650.0f;
 #define ALWAYS_SPAWN_LASER 1
 #define ALWAYS_SPAWN_WARP 0
 #define START_AT_ROUND 1
-#define STARTING_LIFE 25
+#define STARTING_LIFE 2
 #define INVINSIBLE 1
 #define CAN_DESTROY_GOLD 0
 #define DRAW_DEBRIS_DEBUG 0
 #define DEBRIS_IMMUNE_FROM_BALL 0
 #define SKIP_PLAYER_READY 0
 #define SHOW_MOCK_GAMEPLAY 0
+#define MENU_MOCKUP 0
 
 
-#else
 
-#define SHOW_GAME_BACKGROUND 1
-#define SHOW_GAME_BORDERS 1
-#define CHECK_MEMORY_LEAKS 0
-#define CREATE_DEBUG_CONSOLE 0
-#define PAUSE_CONSOLE_WHEN_CLOSING 0
-#define START_IN_GAME 0
-#define START_IN_INTRO 0
-#define SHOW_BALL_DEBUG 0
-#define SHOW_BALL_DIRECTION_LINE 0
-#define SHOW_DEBUG_CAPSULE 0
-#define SHOW_PADDLE_DEBUG 0
-#define SHOW_PADDLE_DEBUG_COLLISION 0
-#define SHOW_PADDLE_DEBUG_ZONES 0
-#define SHOW_DEBUG_GRID_COORD 0
-#define SHOW_DEBUG_GRID_BLOCK 0
-#define SHOW_DEBUG_GRID 0
-#define SHOW_DEBUG_GAME_BOUNDARY 0
-#define USE_SOUNDFX 0
-#define SHOW_DEBUG_LASER 0
-#define TOGGLE_PADDLE_DEBUG 0
-#define ALWAYS_SPAWN_EXPAND 0
-#define ALWAYS_SPAWN_SLOW 0
-#define ALWAYS_SPAWN_CATCH 0
-#define ALWAYS_SPAWN_DISRUPT 0
-#define ALWAYS_SPAWN_LASER 0
-#define ALWAYS_SPAWN_WARP 0
-#define START_AT_ROUND 1
-#define INVINSIBLE 0
-#define CAN_DESTROY_GOLD 0
-#define DRAW_DEBRIS_DEBUG 0
-#define DEBRIS_IMMUNE_FROM_BALL 0
-#define SKIP_PLAYER_READY 0
-#define SHOW_MOCK_GAMEPLAY 0
 
-#endif
+
+
+
+

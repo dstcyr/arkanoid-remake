@@ -2,38 +2,72 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Sources\Arkanoid.cpp" />
-    <ClCompile Include="Sources\Ball.cpp">
-      <Filter>Game</Filter>
+    <ClCompile Include="Sources\Menu.cpp">
+      <Filter>States</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Capsule.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Grid.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Laser.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Paddle.cpp">
-      <Filter>Game</Filter>
+    <ClCompile Include="Sources\SaveGame.cpp" />
+    <ClCompile Include="Sources\Intro.cpp">
+      <Filter>States</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Game.cpp">
       <Filter>States</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\LevelIntro.cpp">
-      <Filter>States</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Title.cpp">
-      <Filter>States</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\SaveGame.cpp">
+    <ClCompile Include="Sources\World.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\LevelData.cpp">
-      <Filter>Game</Filter>
+    <ClCompile Include="Sources\Ball.cpp">
+      <Filter>Game\Objects</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Debris.cpp">
-      <Filter>Game</Filter>
+      <Filter>Game\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Laser.cpp">
+      <Filter>Game\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Ship.cpp">
+      <Filter>Game\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Tile.cpp">
+      <Filter>Game\Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\StaticTile.cpp">
+      <Filter>Game\Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\AnimatedTile.cpp">
+      <Filter>Game\Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\PowerManager.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Power.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\PlayerPower.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\SlowPower.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\BallManager.cpp">
+      <Filter>Game\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\MovingObject.cpp">
+      <Filter>Game\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\DisruptPower.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\ExpandPower.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\LaserPower.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\LaserManager.cpp">
+      <Filter>Game\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\BreakPower.cpp">
+      <Filter>Game\Powers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -43,43 +77,84 @@
     <Filter Include="Game">
       <UniqueIdentifier>{3039bdb9-5ffd-46f6-9485-ced8bdab0f9a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Levels">
+      <UniqueIdentifier>{d2a9f447-cd44-41b9-acc3-72f1bc148dfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Objects">
+      <UniqueIdentifier>{e5eab6eb-69c8-4d15-8a93-a9a2788779ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Powers">
+      <UniqueIdentifier>{c37d92d0-24d8-4c67-88ce-4ebb2a04182b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources\Ball.h">
-      <Filter>Game</Filter>
+    <ClInclude Include="Sources\Config.h" />
+    <ClInclude Include="Sources\Menu.h">
+      <Filter>States</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Capsule.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Config.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Grid.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Laser.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\LevelData.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Paddle.h">
-      <Filter>Game</Filter>
+    <ClInclude Include="Sources\SaveGame.h" />
+    <ClInclude Include="Sources\Intro.h">
+      <Filter>States</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Game.h">
       <Filter>States</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\LevelIntro.h">
-      <Filter>States</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Title.h">
-      <Filter>States</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\SaveGame.h">
+    <ClInclude Include="Sources\World.h">
       <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Ball.h">
+      <Filter>Game\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Debris.h">
-      <Filter>Game</Filter>
+      <Filter>Game\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Laser.h">
+      <Filter>Game\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Ship.h">
+      <Filter>Game\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Tile.h">
+      <Filter>Game\Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\StaticTile.h">
+      <Filter>Game\Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\AnimatedTile.h">
+      <Filter>Game\Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\PowerManager.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Power.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\PlayerPower.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\SlowPower.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\BallManager.h">
+      <Filter>Game\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\MovingObject.h">
+      <Filter>Game\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\DisruptPower.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ExpandPower.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\LaserPower.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\LaserManager.h">
+      <Filter>Game\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\BreakPower.h">
+      <Filter>Game\Powers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

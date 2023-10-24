@@ -1,143 +1,51 @@
 #pragma once
 #include "Config.h"
 #include "StateMachine.h"
-#include "Rect.h"
-#include "Grid.h"
+#include <vector>
 #include "Ball.h"
-#include "Paddle.h"
-#include "TaskManager.h"
-
-class Capsule;
-class Laser;
-class Debris;
-
-class SpawnDebrisState : public CTaskState
-{
-public:
-    SpawnDebrisState()
-    {
-        spawnDebrisPhase = 0;
-        spawnDebrisElapsed = 0;
-    }
-
-    int spawnDebrisPhase;
-    float spawnDebrisElapsed;
-};
-
-class PowerTask : public CTaskState
-{
-public:
-    PowerTask()
-    {
-        PowerPhase = 0;
-        CurrentPower = nullptr;
-        NextPower = nullptr;
-    }
-
-    int PowerPhase;
-    Capsule* CurrentPower;
-    Capsule* NextPower;
-};
-
-class CapsuleState : public CTaskState
-{
-public:
-    CapsuleState()
-    {
-        CurrentCapsule = nullptr;
-    }
-
-    CapsuleState(Capsule* capsule)
-    {
-        CurrentCapsule = capsule;
-    }
-
-    Capsule* CurrentCapsule;
-};
+#include "BallManager.h"
+#include "PowerManager.h"
+#include "World.h"
+#include "Ship.h"
+#include "LaserManager.h"
+#include "Animation.h"
 
 class Game : public IState
 {
 public:
-    Game();
     void OnEnter() override;
     void OnUpdate(float dt) override;
     void OnRender() override;
     void OnExit() override;
 
-    Ball* AddBall(float x, float y);
-    void SetGameSpeed(float speed);
-    float GetGameSpeed() const;
-    void AddVaus();
-    void RemoveVaus();
-    void ActivateLaser(Capsule* capsule);
-    void DeactivateLaser(Capsule* capsule);
-    void ExpandVaus();
-    void StandardVaus();
-    void ActivateCatch(bool activate);
-    void OpenTheWarpDoors();
-    void CloseTheWarpDoors();
+    bool WarpDoorOpenned() const { return m_warpDoorOpen; }
 
-    bool GetCurrentBallPosition(float* x, float* y);
-
+    void OnWarpedOut();
 private:
     size_t m_whiteFont;
     size_t m_orangeFont;
     size_t m_background;
     size_t m_borders;
-    Rect<float> m_bounds;
-    Grid m_grid;
-    Paddle m_paddle;
-    std::vector<Capsule*> m_activeCapsules;
-    std::vector<Capsule*> m_destroyedCapsules;
-    std::vector<Laser*> m_activateLasers;
-    std::vector<Ball*> m_activeBalls;
-    std::vector<Debris*> m_activeDebris;
-    float m_gameSpeed;
-    Capsule* m_activePower;
-    int m_vausShips;
-
-
-
-
-
-    // CTaskManager m_taskMgr;
-    CTaskManager m_taskMgr2;
-
-
-
-
-
-    float m_elapsedReset;
-    float m_elapsedEndRound;
-    bool m_playing;
-    Animation m_warpDoor;
-    Animation m_topDoorA;
-    Animation m_topDoorB;
-    Animation m_explosion;
-    bool m_warpDoorOpen;
-    int m_SpawnDebrisPhase;
-    float m_SpawnDebrisElapsed;
-    Rect<float> m_explosionTransform;
-    bool m_explosionActive;
-    float m_playerStartElapsed;
-    size_t m_playerStartSFX;
-    bool m_PlayerStart;
-#if SHOW_MOCK_GAMEPLAY
-    size_t m_mockBackground;
-#endif
     size_t m_lifeTexture;
+    bool m_warpDoorOpen;
+    bool m_levelEnded;
+    float m_levelEndElapsed;
 
-    void OnBlockDestroyed(const BallEvent& ballEvent);
+    Animation m_warpDoor;
+
+    BallManager m_ballMgr;
+    PowerManager m_powerMgr;
+    LaserManager m_laserMgr;
+
+    void ChooseBackground(int level);
+    void LoadUIElements(int level);
+    void RenderUI();
+
+    void OnBlockDestroyed(const BlockEvent& blockEvent);
     void OnBottomReached(const BallEvent& ballEvent);
+    void OnActivateSlowPower(const Event& powerEvent);
+    void OnActivateDisruptPower(const Event& powerEvent);
+    void OnActivateBreakPower(const Event& powerEvent);
     void OnLaserShot(const LaserEvent& laserEvent);
-    void OnExitLevel(const PaddleEvent& paddleEvent);
-    void UpdateCapsules(float dt);
-    //void ActivatePower(Capsule* capsule);
-
-    bool TaskActivatePower(float dt, PowerTask* state);
-    bool TaskResetBall(float dt, CTaskState* state);
-    bool TaskLevelCleared(float dt, CTaskState* state);
-    bool TaskSpawnDebris(float dt, SpawnDebrisState* state);
-    bool TaskPlayExplosion(float dt, CTaskState* state);
-    bool TaskPlayerStart(float dt, CTaskState* state);
+    void LoadDoors();
 };

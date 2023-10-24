@@ -1,22 +1,14 @@
 #pragma once
-#include "Rect.h"
-#include "Config.h"
+#include "MovingObject.h"
 
-class Grid;
-
-class Laser
+class Laser : public MovingObject
 {
 public:
-    Laser();
-    Laser(float x, float y, float v);
+    Laser(float x, float y, float velocity);
     void Initialize();
     void Update(float dt);
     void Render();
-    void GetTransform(Rect<float>* transform);
-    bool CheckBallCollisionWithGrid(Grid& grid);
 
 private:
-    Rect<float> m_transform;
-    float m_velocity;
     size_t m_laserTexture;
 };
