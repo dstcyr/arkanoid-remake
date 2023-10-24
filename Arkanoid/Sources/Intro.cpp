@@ -27,8 +27,11 @@ void Intro::OnUpdate(float dt)
 
 void Intro::OnRender()
 {
-    Engine::DrawString("HIGH SCORE", m_orangeFont, 350.0f, 24.0f);
-    Engine::DrawString("ROUND " + std::to_string(SaveGame::round), m_whiteFont, 350.0f, 580.0f);
+    Engine::DrawString("HIGH SCORE", m_orangeFont, 350.0f, 30.0f);
+    Engine::DrawString(std::to_string(SaveGame::highScore), m_whiteFont, 450.0f, 70.0f);
+    Engine::DrawString("1UP", m_orangeFont, 140.0f, 30.0f);
+    Engine::DrawString(std::to_string(SaveGame::score), m_whiteFont, 180.0f, 70.0f);
+    Engine::DrawString("ROUND " + std::to_string(SaveGame::round), m_whiteFont, 400.0f, 480.0f);
 }
 
 void Intro::OnExit()
