@@ -17,4 +17,7 @@ public:
     void Activate() override;
     std::string ToString() override;
     int GetInstanceID() const override { return PlayerPower::GetID(); }
+
+private:
+    size_t m_LifeSfx;
 };

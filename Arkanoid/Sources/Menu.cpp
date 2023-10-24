@@ -1,19 +1,22 @@
 #include "Menu.h"
 #include "Engine.h"
 #include "SaveGame.h"
+#include "Log.h"
 
 void Menu::OnEnter()
 {
+    LOG(LL_DEBUG, "Menu::OnEnter");
     m_whiteFont = Engine::LoadFont("Assets/Fonts/8bitwonder.ttf", "whitefont", 32, NColor::White);
     m_orangeFont = Engine::LoadFont("Assets/Fonts/8bitwonder.ttf", "redfont", 32, NColor(224, 80, 0, 255));
     m_title = Engine::LoadTexture("Assets/Images/Title.png");
-    m_titleMusic = Engine::LoadMusic("Assets/Audio/Menu.wav");
+    m_titleMusic = Engine::LoadMusic("Assets/Audio/theme.wav");
 
 #if MENU_MOCKUP
     m_menuMockup = Engine::LoadTexture("Assets/Design/menu.png");
 #endif
 
-    Engine::PlayMusic(m_titleMusic, false);
+    Engine::StopMusic();
+    Engine::PlayMusic(m_titleMusic, 0);
 }
 
 void Menu::OnUpdate(float dt)

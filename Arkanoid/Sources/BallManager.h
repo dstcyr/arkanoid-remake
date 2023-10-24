@@ -3,6 +3,8 @@
 #include "Ball.h"
 #include "Delegate.h"
 
+// TODO : Should manage the ball and not let the ball do all the work regarding collision
+
 class BallManager
 {
 public:

@@ -30,6 +30,7 @@ Ship::Ship(float x, float y)
     m_contractTargetWidth = 128.0f;
     m_expandTargetWidth = 192.0f;
     m_LaserActivated = false;
+    m_expandSfx = 0;
 }
 
 void Ship::Initialize()
@@ -43,6 +44,7 @@ void Ship::Initialize()
     m_laserRightPart = Engine::LoadTexture("Assets/Images/laserRight.png");
     m_laserMiddleLeftPart = Engine::LoadTexture("Assets/Images/laserMiddleLeft.png");
     m_laserMiddleRightPart = Engine::LoadTexture("Assets/Images/laserMiddleRight.png");
+    m_expandSfx = Engine::LoadSound("Assets/Audio/expand.wav");
     m_LaserActivated = false;
 }
 
@@ -228,6 +230,14 @@ void Ship::GetZoneDelimiters(float* startA, float* endA, float* startB, float* e
 
 bool Ship::TaskExpandShip(float dt, ShipState* state)
 {
+    static bool firstTime = true;
+
+    if (state->firstPass)
+    {
+        Engine::PlaySFX(m_expandSfx);
+        state->firstPass = false;
+    }
+
     state->elapsed += dt;
 
     if (state->elapsed > m_expandSpeed)

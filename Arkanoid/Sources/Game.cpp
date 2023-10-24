@@ -8,6 +8,7 @@
 
 void Game::OnEnter()
 {
+    LOG(LL_DEBUG, "Game::OnEnter");
     int levelToLoad = SaveGame::round - 1;
     LoadUIElements(levelToLoad);
     LoadDoors();
@@ -23,8 +24,12 @@ void Game::OnEnter()
     m_powerMgr.OnActivateDistruptPower.Bind(this, &Game::OnActivateDisruptPower);
     m_powerMgr.OnActivateBreakPower.Bind(this, &Game::OnActivateBreakPower);
 
+    m_laserMgr.Initialize();
+
     m_levelEnded = false;
     m_bottomReached = false;
+    m_warpSfx = Engine::LoadSound("Assets/Audio/warp.wav");
+    Engine::SetVolume(m_warpSfx, 40);
 }
 
 void Game::OnUpdate(float dt)
@@ -124,7 +129,9 @@ void Game::OnExit()
 
 void Game::OnWarpedOut()
 {
-    LOG(LL_DEBUG, "Warped out");
+    m_levelEndElapsed = 0.0f;
+    m_levelEnded = true;
+    Engine::PlaySFX(m_warpSfx);
 }
 
 void Game::ChooseBackground(int level)
@@ -193,8 +200,6 @@ void Game::OnBlockDestroyed(const BlockEvent& blockEvent)
 
 void Game::OnBottomReached(const BallEvent& ballEvent)
 {
-    return;
-    
     m_ballMgr.Remove(ballEvent.ball);
     m_bottomReached = true;
 }

@@ -25,7 +25,7 @@ public:
     void Clear();
     Ship* GetShip();
 
-    void HitTile(int index);
+    int HitTile(int index);
     bool CheckCollision(float x, float y, float w, float h, int* id) const;
     void GetWorldPositionFromIndex(int index, int* outX, int* outY) const;
     int GetCellWidth() const;

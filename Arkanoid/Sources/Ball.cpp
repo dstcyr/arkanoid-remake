@@ -4,6 +4,8 @@
 #include "Ship.h"
 #include "World.h"
 #include "Collision.h"
+#include "Stopwatch.h"
+#include "Config.h"
 
 Ball::Ball() : Ball(BALL_START_X, BALL_START_Y)
 {
@@ -20,6 +22,12 @@ Ball::Ball(float x, float y)
 void Ball::Initialize()
 {
     m_ballTexture = Engine::LoadTexture("Assets/Images/Ball.png");
+    m_shipCollisionSfx = Engine::LoadSound("Assets/Audio/shiphit.wav");
+    Engine::SetVolume(m_shipCollisionSfx, 50);
+    m_blockCollisionSfx = Engine::LoadSound("Assets/Audio/blockhit.wav");
+    Engine::SetVolume(m_blockCollisionSfx, 50);
+    m_hardBlockCollisionSfx = Engine::LoadSound("Assets/Audio/hardblockhit.wav");
+    Engine::SetVolume(m_hardBlockCollisionSfx, 50);
 }
 
 void Ball::Update(float dt)
@@ -195,6 +203,7 @@ bool Ball::CheckCollisionWithShip(float* px, float* py)
 
             *px = temp.x;
             *py = temp.y;
+            PlayHitShipSFX();
             return true;
         }
     }
@@ -218,7 +227,8 @@ bool Ball::CheckCollisionWithGrid(float* px, float* py)
         Engine::PlaySFX(m_brickHitSound);
 #endif
 
-        World::Get().HitTile(hitIndex);
+        int hit = World::Get().HitTile(hitIndex);
+        PlayHitBlockSfx(hit);
 
         int worldX, worldY;
         World::Get().GetWorldPositionFromIndex(hitIndex, &worldX, &worldY);
@@ -252,4 +262,50 @@ bool Ball::CheckCollisionWithGrid(float* px, float* py)
     }
 
     return false;
+}
+
+void Ball::PlayHitShipSFX()
+{
+    static CStopwatch hitSFXStopwatch;
+    static bool firstTime = true;
+
+    hitSFXStopwatch.Stop();
+    double elapsed = hitSFXStopwatch.ElapsedMilliseconds();
+    if (elapsed > SFX_DELAY || firstTime)
+    {
+        Engine::PlaySFX(m_shipCollisionSfx);
+        hitSFXStopwatch.Start();
+        firstTime = false;
+    }
+    else
+    {
+        LOG(LL_DEBUG, "Multi SFX prevented");
+    }
+}
+
+void Ball::PlayHitBlockSfx(int hit)
+{
+    static CStopwatch hitSFXStopwatch;
+    static bool firstTime = true;
+
+    hitSFXStopwatch.Stop();
+    double elapsed = hitSFXStopwatch.ElapsedMilliseconds();
+    if (elapsed > SFX_DELAY || firstTime)
+    {
+        if (hit > 0)
+        {
+            Engine::PlaySFX(m_hardBlockCollisionSfx);
+        }
+        else
+        {
+            Engine::PlaySFX(m_blockCollisionSfx);
+        }
+
+        hitSFXStopwatch.Start();
+        firstTime = false;
+    }
+    else
+    {
+        LOG(LL_DEBUG, "Multi SFX prevented");
+    }
 }

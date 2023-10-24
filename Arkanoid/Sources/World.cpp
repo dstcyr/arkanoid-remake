@@ -154,19 +154,19 @@ Ship* World::GetShip()
     return m_ship;
 }
 
-void World::HitTile(int index)
+int World::HitTile(int index)
 {
     Tile* tile = m_gridData[index];
 
     if (tile->tileType == EMPTY_TILE)
     {
-        return;
+        return 1000;
     }
 
     tile->Hit();
     if (tile->tileType == GOLD_TILE)
     {
-        return;
+        return 1000;
     }
 
     if (tile->hit <= 0)
@@ -181,6 +181,8 @@ void World::HitTile(int index)
         GetWorldPositionFromIndex(index, &x, &y);
         OnBlockDestroyed.Invoke<BlockEvent>(static_cast<float>(x), static_cast<float>(y));
     }
+
+    return tile->hit;
 }
 
 bool World::CheckCollision(float x, float y, float w, float h, int* id) const

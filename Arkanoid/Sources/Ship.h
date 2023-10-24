@@ -38,10 +38,12 @@ public:
     {
         elapsed = 0.0f;
         phase = 0;
+        firstPass = true;
     }
 
     float elapsed;
     int phase;
+    bool firstPass;
 };
 
 class Ship : public MovingObject
@@ -70,6 +72,7 @@ private:
     size_t m_laserMiddleRightPart;
     size_t m_laserLeftPart;
     size_t m_laserRightPart;
+    size_t m_expandSfx;
     float m_sideWidth;
     float m_middleWidth;
     float m_expandSpeed;

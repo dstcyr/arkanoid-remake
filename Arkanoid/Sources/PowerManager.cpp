@@ -57,7 +57,7 @@ void PowerManager::Spawn(float x, float y, bool warpDoor)
     }
 
     // BreakCapsule is not activated but I don't want to spawn it 2 times in a row
-    if (randomNumber >= 4 && randomNumber <= 6 && !warpDoor)
+    //if (randomNumber >= 4 && randomNumber <= 6 && !warpDoor)
     {
         // If it matches one of the last three, it's a warp powerup.
         BreakPower* bp = new BreakPower(x, y);

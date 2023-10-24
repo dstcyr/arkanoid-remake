@@ -31,8 +31,13 @@ public:
 
 private:
     size_t m_ballTexture = 0;
+    size_t m_shipCollisionSfx = 0;
+    size_t m_blockCollisionSfx = 0;
+    size_t m_hardBlockCollisionSfx = 0;
 
     bool CheckCollisionWithBounds(float* px, float* py);
     bool CheckCollisionWithShip(float* px, float* py);
     bool CheckCollisionWithGrid(float* px, float* py);
+    void PlayHitShipSFX();
+    void PlayHitBlockSfx(int hit);
 };

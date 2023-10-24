@@ -33,6 +33,7 @@ const float GAME_SPEED = 500.0f;
 const float SLOWDOWN_ITR = 0.5f;
 const float SLOWDOWN_DELAY = 15.0f;
 const int LAST_LEVEL = 35;
+const double SFX_DELAY = 100.0;
 
 const int EMPTY_TILE = 0;
 const int HARD_TILE = 9;
@@ -57,7 +58,7 @@ const int GOLD_TILE = 10;
 #define ALWAYS_SPAWN_SLOW 0
 #define ALWAYS_SPAWN_CATCH 0
 #define ALWAYS_SPAWN_DISRUPT 0
-#define ALWAYS_SPAWN_LASER 0
+#define ALWAYS_SPAWN_LASER 1
 #define ALWAYS_SPAWN_WARP 0
 #define START_AT_ROUND 1
 #define STARTING_LIFE 2
