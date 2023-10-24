@@ -24,6 +24,7 @@ void Game::OnEnter()
     m_powerMgr.OnActivateBreakPower.Bind(this, &Game::OnActivateBreakPower);
 
     m_levelEnded = false;
+    m_bottomReached = false;
 }
 
 void Game::OnUpdate(float dt)
@@ -45,6 +46,26 @@ void Game::OnUpdate(float dt)
             }
         }
     }
+    else if (m_bottomReached)
+    {
+        m_bottomReached = false;
+        if (m_ballMgr.Count() <= 0)
+        {
+            SaveGame::life--;
+            if (SaveGame::life <= 0)
+            {
+                // Game Over
+                SaveGame::life = 0;
+                SaveGame::CheckHighScore();
+                Engine::SetState("menu");
+            }
+            else
+            {
+                m_powerMgr.Clear();
+                Engine::SetState("intro");
+            }
+        }
+    }
     else
     {
         World::Get().Update(dt);
@@ -55,9 +76,9 @@ void Game::OnUpdate(float dt)
         }
         else
         {
-            m_ballMgr.Update(dt);
             m_powerMgr.Update(dt);
             m_laserMgr.Update(dt);
+            m_ballMgr.Update(dt);
 
             if (m_warpDoorOpen)
             {
@@ -88,8 +109,16 @@ void Game::OnExit()
 {
     m_warpDoorOpen = false;
 
-    m_ballMgr.Destroy();
     World::Get().OnBlockDestroyed.Clear();
+    World::Get().GetShip()->OnLaserShotDelegate.Clear();
+
+    m_ballMgr.OnBallReachedBottom.Clear();
+
+    m_powerMgr.OnActivateSlowPower.Clear();
+    m_powerMgr.OnActivateDistruptPower.Clear();
+    m_powerMgr.OnActivateBreakPower.Clear();
+
+    m_ballMgr.Destroy();
     World::Get().Clear();
 }
 
@@ -164,28 +193,10 @@ void Game::OnBlockDestroyed(const BlockEvent& blockEvent)
 
 void Game::OnBottomReached(const BallEvent& ballEvent)
 {
-#if INVINSIBLE
     return;
-#endif
     
     m_ballMgr.Remove(ballEvent.ball);
-
-    if (m_ballMgr.Count() <= 0)
-    {
-        SaveGame::life--;
-        if (SaveGame::life <= 0)
-        {
-            // Game Over
-            SaveGame::life = 0;
-            SaveGame::CheckHighScore();
-            Engine::SetState("title");
-        }
-        else
-        {
-            m_powerMgr.Clear();
-            Engine::SetState("intro");
-        }
-    }
+    m_bottomReached = true;
 }
 
 void Game::OnActivateSlowPower(const Event& powerEvent)

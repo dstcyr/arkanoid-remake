@@ -30,6 +30,7 @@ private:
     bool m_warpDoorOpen;
     bool m_levelEnded;
     float m_levelEndElapsed;
+    bool m_bottomReached;
 
     Animation m_warpDoor;
 
