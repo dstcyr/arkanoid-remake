@@ -93,3 +93,31 @@ void BallManager::SetGameSpeed(float speed)
         ball->SetSpeed(m_gameSpeed);
     }
 }
+
+void BallManager::Clear()
+{
+    for (Ball* ball : m_activeBalls)
+    {
+        SAFE_DELETE(ball);
+    }
+
+    m_activeBalls.clear();
+}
+
+void BallManager::Remove(Ball* ball)
+{
+    auto it = m_activeBalls.begin();
+    while (it != m_activeBalls.end())
+    {
+        if (*it == ball)
+        {
+            //SAFE_DELETE(ball);
+            m_ballsToDelete.push_back(ball);
+            it = m_activeBalls.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}

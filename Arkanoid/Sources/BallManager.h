@@ -12,12 +12,15 @@ public:
     void Destroy();
     int Count();
     void SlowDown();
+    void Clear();
+    void Remove(Ball* ball);
 
     CDelegate OnBallReachedBottom;
 
 private:
     float m_gameSpeed = GAME_SPEED;
     std::vector<Ball*> m_activeBalls;
+    std::vector<Ball*> m_ballsToDelete;
     float m_slowdownElapsed;
 
     void OnBallReachedBottomCallback(const BallEvent& ballEvent);

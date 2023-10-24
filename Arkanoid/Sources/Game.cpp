@@ -88,9 +88,9 @@ void Game::OnExit()
 {
     m_warpDoorOpen = false;
 
-    World::Get().Clear();
     m_ballMgr.Destroy();
     World::Get().OnBlockDestroyed.Clear();
+    World::Get().Clear();
 }
 
 void Game::OnWarpedOut()
@@ -164,7 +164,28 @@ void Game::OnBlockDestroyed(const BlockEvent& blockEvent)
 
 void Game::OnBottomReached(const BallEvent& ballEvent)
 {
-    LOG(LL_DEBUG, "Bottom reached");
+#if INVINSIBLE
+    return;
+#endif
+    
+    m_ballMgr.Remove(ballEvent.ball);
+
+    if (m_ballMgr.Count() <= 0)
+    {
+        SaveGame::life--;
+        if (SaveGame::life <= 0)
+        {
+            // Game Over
+            SaveGame::life = 0;
+            SaveGame::CheckHighScore();
+            Engine::SetState("title");
+        }
+        else
+        {
+            m_powerMgr.Clear();
+            Engine::SetState("intro");
+        }
+    }
 }
 
 void Game::OnActivateSlowPower(const Event& powerEvent)
