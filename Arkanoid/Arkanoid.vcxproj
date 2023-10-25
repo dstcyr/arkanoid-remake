@@ -157,6 +157,7 @@
     <ClCompile Include="Sources\Ball.cpp" />
     <ClCompile Include="Sources\BallManager.cpp" />
     <ClCompile Include="Sources\BreakPower.cpp" />
+    <ClCompile Include="Sources\CatchPower.cpp" />
     <ClCompile Include="Sources\Debris.cpp" />
     <ClCompile Include="Sources\DisruptPower.cpp" />
     <ClCompile Include="Sources\ExpandPower.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="Sources\Ball.h" />
     <ClInclude Include="Sources\BallManager.h" />
     <ClInclude Include="Sources\BreakPower.h" />
+    <ClInclude Include="Sources\CatchPower.h" />
     <ClInclude Include="Sources\Config.h" />
     <ClInclude Include="Sources\Debris.h" />
     <ClInclude Include="Sources\DisruptPower.h" />

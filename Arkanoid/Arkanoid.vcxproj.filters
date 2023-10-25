@@ -69,6 +69,9 @@
     <ClCompile Include="Sources\BreakPower.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\CatchPower.cpp">
+      <Filter>Game\Powers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="States">
@@ -154,6 +157,9 @@
       <Filter>Game\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Sources\BreakPower.h">
+      <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\CatchPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
   </ItemGroup>

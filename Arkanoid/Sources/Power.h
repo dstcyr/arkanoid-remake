@@ -1,6 +1,15 @@
 #pragma once
 #include "MovingObject.h"
 #include "Animation.h"
+#include "Delegate.h"
+
+class PowerEvent : public Event
+{
+public:
+    PowerEvent() : Activate(true) {}
+    PowerEvent(bool activate) : Activate(activate) {}
+    bool Activate;
+};
 
 class Power : public MovingObject
 {

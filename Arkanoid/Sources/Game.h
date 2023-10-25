@@ -45,9 +45,10 @@ private:
 
     void OnBlockDestroyed(const BlockEvent& blockEvent);
     void OnBottomReached(const BallEvent& ballEvent);
-    void OnActivateSlowPower(const Event& powerEvent);
-    void OnActivateDisruptPower(const Event& powerEvent);
-    void OnActivateBreakPower(const Event& powerEvent);
+    void OnActivateSlowPower(const PowerEvent& powerEvent);
+    void OnActivateDisruptPower(const PowerEvent& powerEvent);
+    void OnActivateBreakPower(const PowerEvent& powerEvent);
+    void OnActivateCatchPower(const PowerEvent& powerEvent);
     void OnLaserShot(const LaserEvent& laserEvent);
     void LoadDoors();
 };

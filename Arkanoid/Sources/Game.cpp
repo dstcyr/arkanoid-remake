@@ -17,12 +17,14 @@ void Game::OnEnter()
     World::Get().OnBlockDestroyed.Bind(this, &Game::OnBlockDestroyed);
     World::Get().GetShip()->OnLaserShotDelegate.Bind(this, &Game::OnLaserShot);
 
-    m_ballMgr.OnBallReachedBottom.Bind(this, &Game::OnBottomReached);
-    m_ballMgr.SpawnBall();
+    m_ballMgr.Initialize();
+    m_ballMgr.OnBottomReached.Bind(this, &Game::OnBottomReached);
+    m_ballMgr.FirstBallOfTheRound();
 
     m_powerMgr.OnActivateSlowPower.Bind(this, &Game::OnActivateSlowPower);
     m_powerMgr.OnActivateDistruptPower.Bind(this, &Game::OnActivateDisruptPower);
     m_powerMgr.OnActivateBreakPower.Bind(this, &Game::OnActivateBreakPower);
+    m_powerMgr.OnActivateCatchPower.Bind(this, &Game::OnActivateCatchPower);
 
     m_laserMgr.Initialize();
 
@@ -117,7 +119,7 @@ void Game::OnExit()
     World::Get().OnBlockDestroyed.Clear();
     World::Get().GetShip()->OnLaserShotDelegate.Clear();
 
-    m_ballMgr.OnBallReachedBottom.Clear();
+    m_ballMgr.OnBottomReached.Clear();
 
     m_powerMgr.OnActivateSlowPower.Clear();
     m_powerMgr.OnActivateDistruptPower.Clear();
@@ -200,24 +202,44 @@ void Game::OnBlockDestroyed(const BlockEvent& blockEvent)
 
 void Game::OnBottomReached(const BallEvent& ballEvent)
 {
-    m_ballMgr.Remove(ballEvent.ball);
     m_bottomReached = true;
 }
 
-void Game::OnActivateSlowPower(const Event& powerEvent)
+void Game::OnActivateSlowPower(const PowerEvent& powerEvent)
 {
-    m_ballMgr.SlowDown();
+    if (powerEvent.Activate)
+    {
+        m_ballMgr.SlowDown();
+    }
 }
 
-void Game::OnActivateDisruptPower(const Event& powerEvent)
+void Game::OnActivateDisruptPower(const PowerEvent& powerEvent)
 {
-    m_ballMgr.SpawnBall(2);
+    if (powerEvent.Activate)
+    {
+        m_ballMgr.SpawnBall(2);
+    }
 }
 
-void Game::OnActivateBreakPower(const Event& powerEvent)
+void Game::OnActivateBreakPower(const PowerEvent& powerEvent)
 {
-    m_warpDoorOpen = true;
-    m_warpDoor.Play("open", true);
+    if (powerEvent.Activate)
+    {
+        m_warpDoorOpen = true;
+        m_warpDoor.Play("open", true);
+    }
+}
+
+void Game::OnActivateCatchPower(const PowerEvent& powerEvent)
+{
+    if (powerEvent.Activate)
+    {
+        m_ballMgr.CatchingBall(true);
+    }
+    else
+    {
+        m_ballMgr.CatchingBall(false);
+    }
 }
 
 void Game::OnLaserShot(const LaserEvent& laserEvent)

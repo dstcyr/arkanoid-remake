@@ -14,6 +14,12 @@ public:
     float GetW() const { return m_transform.w; }
     float GetH() const { return m_transform.h; }
 
+    void GetPosition(float* px, float* py);
+    void SetPosition(float x, float y);
+
+    void GetVelocity(Vec2D* velocity);
+    void SetVelocity(Vec2D velocity);
+
 protected:
     Rect<float> m_transform;
     Vec2D m_velocity;

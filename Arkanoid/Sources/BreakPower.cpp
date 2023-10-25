@@ -19,7 +19,7 @@ void BreakPower::Activate()
 {
     if (OnActivatePower)
     {
-        OnActivatePower->Invoke<Event>();
+        OnActivatePower->Invoke<PowerEvent>();
     }
 }
 

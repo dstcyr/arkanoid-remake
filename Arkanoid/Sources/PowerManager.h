@@ -14,6 +14,7 @@ public:
     CDelegate OnActivateSlowPower;
     CDelegate OnActivateDistruptPower;
     CDelegate OnActivateBreakPower;
+    CDelegate OnActivateCatchPower;
 
 private:
     std::vector<Power*> m_fallingCapsules;

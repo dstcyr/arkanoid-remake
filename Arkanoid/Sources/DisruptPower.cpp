@@ -19,7 +19,7 @@ void DisruptPower::Activate()
 {
     if (OnActivatePower)
     {
-        OnActivatePower->Invoke<Event>();
+        OnActivatePower->Invoke<PowerEvent>();
     }
 }
 
