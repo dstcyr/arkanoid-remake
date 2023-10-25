@@ -30,6 +30,8 @@ public:
     void GetWorldPositionFromIndex(int index, int* outX, int* outY) const;
     int GetCellWidth() const;
     int GetCellHeight() const;
+    bool LevelCleared();
+    void KillShip();
 
     CDelegate OnBlockDestroyed;
 
@@ -55,6 +57,4 @@ private:
     void GetLocalPosition(int index, int width, int* outX, int* outY) const;
     void AddShip();
     void ToWorld(const int localX, const int localY, float* worldX, float* worldY) const;
-public:
-    bool LevelCleared();
 };

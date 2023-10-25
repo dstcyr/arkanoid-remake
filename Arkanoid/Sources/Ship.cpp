@@ -31,6 +31,7 @@ Ship::Ship(float x, float y)
     m_expandTargetWidth = 192.0f;
     m_LaserActivated = false;
     m_expandSfx = 0;
+    m_Dead = false;
 }
 
 void Ship::Initialize()
@@ -46,55 +47,74 @@ void Ship::Initialize()
     m_laserMiddleRightPart = Engine::LoadTexture("Assets/Images/laserMiddleRight.png");
     m_expandSfx = Engine::LoadSound("Assets/Audio/expand.wav");
     m_LaserActivated = false;
+    m_Dead = false;
+
+    m_playerDeathAnim.Init("Assets/Images/death.png", 4, 512, 256);
+    m_playerDeathAnim.AddClip("death", 0, 4, 0.1f);
 }
 
 void Ship::Update(float dt)
 {
-    float px;
-    UpdateControls(dt, &px);
-    CheckCollisionWithBounds(&px);
+    if (m_Dead)
+    {
+        m_playerDeathAnim.Update(dt);
+    }
+    else
+    {
+        float px;
+        UpdateControls(dt, &px);
+        CheckCollisionWithBounds(&px);
 
-    m_transform.x = px;
-    m_sequence.UpdateSequence(dt);
+        m_transform.x = px;
+        m_sequence.UpdateSequence(dt);
 
-    ProcessShipInput();
+        ProcessShipInput();
+    }
 }
 
 void Ship::Render()
 {
-    float diff = 32.0f - m_sideWidth;
-    if (m_LaserActivated)
+    if (m_Dead)
     {
-
-        RenderShipPart(m_laserLeftPart, m_transform.x + diff, m_transform.y, m_sideWidth, m_transform.h);
-        RenderShipPart(m_laserMiddleLeftPart, m_transform.x + 32.0f, m_transform.y, 32.0f, m_transform.h);
-        RenderShipPart(m_laserMiddleRightPart, m_transform.x + 32.0f + 32.0f, m_transform.y, 32.0f, m_transform.h);
-        RenderShipPart(m_laserRightPart, m_transform.x + 32.0f + m_middleWidth, m_transform.y, m_sideWidth, m_transform.h);
+        m_playerDeathAnim.Render({m_transform.x - 64, m_transform.y - 64, 256, 128});
     }
     else
     {
-        RenderShipPart(m_vausLeftPart, m_transform.x + diff, m_transform.y, m_sideWidth, m_transform.h);
-        RenderShipPart(m_vausMiddlePart, m_transform.x + 32.0f, m_transform.y, m_middleWidth, m_transform.h);
-        RenderShipPart(m_vausRightPart, m_transform.x + 32.0f + m_middleWidth, m_transform.y, m_sideWidth, m_transform.h);
-    }
+        float diff = 32.0f - m_sideWidth;
+        if (m_LaserActivated)
+        {
+
+            RenderShipPart(m_laserLeftPart, m_transform.x + diff, m_transform.y, m_sideWidth, m_transform.h);
+            RenderShipPart(m_laserMiddleLeftPart, m_transform.x + 32.0f, m_transform.y, 32.0f, m_transform.h);
+            RenderShipPart(m_laserMiddleRightPart, m_transform.x + 32.0f + 32.0f, m_transform.y, 32.0f, m_transform.h);
+            RenderShipPart(m_laserRightPart, m_transform.x + 32.0f + m_middleWidth, m_transform.y, m_sideWidth, m_transform.h);
+        }
+        else
+        {
+            RenderShipPart(m_vausLeftPart, m_transform.x + diff, m_transform.y, m_sideWidth, m_transform.h);
+            RenderShipPart(m_vausMiddlePart, m_transform.x + 32.0f, m_transform.y, m_middleWidth, m_transform.h);
+            RenderShipPart(m_vausRightPart, m_transform.x + 32.0f + m_middleWidth, m_transform.y, m_sideWidth, m_transform.h);
+        }
 
 #if SHOW_PADDLE_DEBUG
-    Engine::DrawRect(m_transform.x, m_transform.y, m_transform.w, m_transform.h, NColor::ReddishBrown);
-    Engine::DrawRect(m_transform.x, m_transform.y, m_transform.w, m_transform.h, NColor(0, 255, 0, 255));
+        Engine::DrawRect(m_transform.x, m_transform.y, m_transform.w, m_transform.h, NColor::ReddishBrown);
+        Engine::DrawRect(m_transform.x, m_transform.y, m_transform.w, m_transform.h, NColor(0, 255, 0, 255));
 
-    float halfYheight = 30.0f;
-    float leftZoneAStart, leftZoneAEnd, rightZoneAStart, rightZoneAEnd;
-    GetZoneDelimiters(&leftZoneAStart, &leftZoneAEnd, &rightZoneAStart, &rightZoneAEnd);
+        float halfYheight = 30.0f;
+        float leftZoneAStart, leftZoneAEnd, rightZoneAStart, rightZoneAEnd;
+        GetZoneDelimiters(&leftZoneAStart, &leftZoneAEnd, &rightZoneAStart, &rightZoneAEnd);
 
-    Engine::DrawLine(leftZoneAStart, m_transform.y - halfYheight, leftZoneAStart, m_transform.y + halfYheight, NColor(0, 255, 0, 255));
-    Engine::DrawLine(leftZoneAEnd, m_transform.y - halfYheight, leftZoneAEnd, m_transform.y + halfYheight, NColor(0, 255, 0, 255));
-    Engine::DrawLine(rightZoneAStart, m_transform.y - halfYheight, rightZoneAStart, m_transform.y + halfYheight, NColor(0, 255, 0, 255));
-    Engine::DrawLine(rightZoneAEnd, m_transform.y - halfYheight, rightZoneAEnd, m_transform.y + halfYheight, NColor(0, 255, 0, 255));
+        Engine::DrawLine(leftZoneAStart, m_transform.y - halfYheight, leftZoneAStart, m_transform.y + halfYheight, NColor(0, 255, 0, 255));
+        Engine::DrawLine(leftZoneAEnd, m_transform.y - halfYheight, leftZoneAEnd, m_transform.y + halfYheight, NColor(0, 255, 0, 255));
+        Engine::DrawLine(rightZoneAStart, m_transform.y - halfYheight, rightZoneAStart, m_transform.y + halfYheight, NColor(0, 255, 0, 255));
+        Engine::DrawLine(rightZoneAEnd, m_transform.y - halfYheight, rightZoneAEnd, m_transform.y + halfYheight, NColor(0, 255, 0, 255));
 
-    float halfH = m_transform.h / 2.0f;
-    float topLimit = m_transform.y + halfH;
-    Engine::DrawLine(m_transform.x - 30.0f, topLimit, m_transform.x + m_transform.w + 30.0f, topLimit, NColor(0, 255, 0, 255));
+        float halfH = m_transform.h / 2.0f;
+        float topLimit = m_transform.y + halfH;
+        Engine::DrawLine(m_transform.x - 30.0f, topLimit, m_transform.x + m_transform.w + 30.0f, topLimit, NColor(0, 255, 0, 255));
 #endif
+
+    }
 }
 
 ECollisionResult Ship::GetCollisionResponse(float x, float y)
@@ -212,7 +232,7 @@ void Ship::CheckCollisionWithBounds(float* px)
         {
             *px = RIGHT_WALL_X - m_transform.w;
         }
-        
+
         if (*px < LEFT_WALL_X)
         {
             *px = LEFT_WALL_X;
@@ -398,4 +418,10 @@ void Ship::ActivateLaser()
 void Ship::DeactivateLaser()
 {
     m_sequence.Add(this, &Ship::TaskDeactivateLaser);
+}
+
+void Ship::Die()
+{
+    m_Dead = true;
+    m_playerDeathAnim.Play("death", false);
 }

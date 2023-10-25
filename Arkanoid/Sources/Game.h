@@ -28,10 +28,12 @@ private:
     size_t m_borders;
     size_t m_lifeTexture;
     size_t m_warpSfx;
+    size_t m_PlayerDeathSfx;
     bool m_warpDoorOpen;
     bool m_levelEnded;
     float m_levelEndElapsed;
     bool m_bottomReached;
+    float m_bottomReachedElapsed;
 
     Animation m_warpDoor;
 

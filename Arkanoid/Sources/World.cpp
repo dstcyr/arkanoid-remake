@@ -149,6 +149,14 @@ bool World::LevelCleared()
     return true;
 }
 
+void World::KillShip()
+{
+    if (m_ship)
+    {
+        m_ship->Die();
+    }
+}
+
 Ship* World::GetShip()
 {
     return m_ship;

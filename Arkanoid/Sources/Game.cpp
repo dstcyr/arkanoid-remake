@@ -32,6 +32,8 @@ void Game::OnEnter()
     m_bottomReached = false;
     m_warpSfx = Engine::LoadSound("Assets/Audio/warp.wav");
     Engine::SetVolume(m_warpSfx, 40);
+
+    m_PlayerDeathSfx = Engine::LoadSound("Assets/Audio/death.wav");
 }
 
 void Game::OnUpdate(float dt)
@@ -55,21 +57,27 @@ void Game::OnUpdate(float dt)
     }
     else if (m_bottomReached)
     {
-        m_bottomReached = false;
-        if (m_ballMgr.Count() <= 0)
+        World::Get().Update(dt);
+
+        m_bottomReachedElapsed += dt;
+        if (m_bottomReachedElapsed > 3)
         {
-            SaveGame::life--;
-            if (SaveGame::life <= 0)
+            m_bottomReached = false;
+            if (m_ballMgr.Count() <= 0)
             {
-                // Game Over
-                SaveGame::life = 0;
-                SaveGame::CheckHighScore();
-                Engine::SetState("menu");
-            }
-            else
-            {
-                m_powerMgr.Clear();
-                Engine::SetState("intro");
+                SaveGame::life--;
+                if (SaveGame::life <= 0)
+                {
+                    // Game Over
+                    SaveGame::life = 0;
+                    SaveGame::CheckHighScore();
+                    Engine::SetState("menu");
+                }
+                else
+                {
+                    m_powerMgr.Clear();
+                    Engine::SetState("intro");
+                }
             }
         }
     }
@@ -203,6 +211,10 @@ void Game::OnBlockDestroyed(const BlockEvent& blockEvent)
 void Game::OnBottomReached(const BallEvent& ballEvent)
 {
     m_bottomReached = true;
+    m_bottomReachedElapsed = 0.0f;
+    World::Get().KillShip();
+
+    Engine::PlaySFX(m_PlayerDeathSfx);
 }
 
 void Game::OnActivateSlowPower(const PowerEvent& powerEvent)

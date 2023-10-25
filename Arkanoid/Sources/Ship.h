@@ -3,6 +3,7 @@
 #include "Config.h"
 #include "TaskManager.h"
 #include "Delegate.h"
+#include "Animation.h"
 
 class Ball;
 
@@ -61,6 +62,7 @@ public:
     void ContractShip();
     void ActivateLaser();
     void DeactivateLaser();
+    void Die();
 
     CDelegate OnLaserShotDelegate;
 
@@ -79,6 +81,8 @@ private:
     float m_contractTargetWidth;
     float m_expandTargetWidth;
     bool m_LaserActivated;
+    Animation m_playerDeathAnim;
+    bool m_Dead;
 
     CTaskManager m_sequence;
 
