@@ -306,7 +306,7 @@ ECollisionResult BallManager::CheckCollisionWithShip(float* px, float* py, Ship*
     return response;
 }
 
-float BallManager::CheckCollisionWithGrid(float* px, float* py, Rect<float>& transform, Vec2D& velocity)
+bool BallManager::CheckCollisionWithGrid(float* px, float* py, Rect<float>& transform, Vec2D& velocity)
 {
     int hitIndex = 0;
 

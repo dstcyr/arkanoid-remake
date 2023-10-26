@@ -61,7 +61,7 @@ private:
     void SetGameSpeed(float speed);
     ECollisionBoundType CheckCollisionWithBounds(float* px, float* py, Rect<float>& transform, Vec2D& velocity);
     ECollisionResult CheckCollisionWithShip(float* px, float* py, Ship* ship, Rect<float>& transform, Vec2D& velocity);
-    float CheckCollisionWithGrid(float* px, float* py, Rect<float>& transform, Vec2D& velocity);
+    bool CheckCollisionWithGrid(float* px, float* py, Rect<float>& transform, Vec2D& velocity);
     void PlayHitBlockSfx(int hit);
     void PlayHitShipSFX();
     void ProcessInput();

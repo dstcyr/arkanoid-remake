@@ -37,6 +37,13 @@ public:
     void ClearShip();
     void AddShip();
 
+    void ToLocal(const float worldX, const float worldY, int* localX, int* localY) const;
+    void ToWorld(const int localX, const int localY, float* worldX, float* worldY) const;
+
+    int GetTileType(int x, int y);
+    bool GetHeight() const;
+    bool GetWidth() const;
+
     CDelegate OnBlockDestroyed;
 
 private:
@@ -62,5 +69,4 @@ private:
     void RenderGrid();
     int GetIndexFromPosition(int x, int y) const;
     void GetLocalPosition(int index, int width, int* outX, int* outY) const;
-    void ToWorld(const int localX, const int localY, float* worldX, float* worldY) const;
 };

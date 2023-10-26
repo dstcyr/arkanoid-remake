@@ -228,11 +228,14 @@ void Game::OnBottomReached(const BallEvent& ballEvent)
     return;
 #endif
 
-    m_bottomReached = true;
-    m_bottomReachedElapsed = 0.0f;
-    World::Get().KillShip();
+    if (m_ballMgr.Count() <= 1)
+    {
+        m_bottomReached = true;
+        m_bottomReachedElapsed = 0.0f;
+        World::Get().KillShip();
 
-    Engine::PlaySFX(m_PlayerDeathSfx);
+        Engine::PlaySFX(m_PlayerDeathSfx);
+    }
 }
 
 void Game::OnActivateSlowPower(const PowerEvent& powerEvent)

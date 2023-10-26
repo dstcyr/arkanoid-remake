@@ -133,6 +133,38 @@ void World::AddShip()
     m_ship->Initialize();
 }
 
+void World::ToLocal(const float worldX, const float worldY, int* localX, int* localY) const
+{
+    *localX = static_cast<int>((worldX - m_offsetX) / m_cellWidth);
+    *localY = static_cast<int>((worldY - m_offsetY) / m_cellHeight);
+}
+
+int World::GetTileType(int x, int y)
+{
+    if(x < 0 || y < 0 || x >= m_width || y >= m_height)
+    {
+        return -1;
+    }
+
+    int idx = GetIndexFromPosition(x, y);
+    if(m_gridData[idx] != nullptr)
+    {
+        return m_gridData[idx]->tileType;
+    }
+
+    return EMPTY_TILE;
+}
+
+bool World::GetHeight() const
+{
+    return m_height;
+}
+
+bool World::GetWidth() const
+{
+    return m_width;
+}
+
 void World::ToWorld(const int localX, const int localY, float* worldX, float* worldY) const
 {
     *worldX = static_cast<float>(localX * m_cellWidth) + m_offsetX;
