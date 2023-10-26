@@ -6,6 +6,7 @@
 #include "Collision.h"
 #include "Stopwatch.h"
 #include "Config.h"
+#include "MathUtils.h"
 
 Ball::Ball() : Ball(BALL_START_X, BALL_START_Y)
 {
@@ -21,6 +22,11 @@ Ball::Ball(float x, float y)
 
 void Ball::SetAngle(float angle)
 {
+    if (Engine::NearEqual(std::abs(angle), 0.0f) || Engine::NearEqual(std::abs(angle), 180.0f))
+    {
+        angle = -65.0f;
+    }
+
     float length = m_velocity.Length();
     if (length == 0.0f)
     {

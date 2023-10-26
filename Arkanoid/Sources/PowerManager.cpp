@@ -195,6 +195,7 @@ void PowerManager::Clear()
 
 void PowerManager::Update(float dt)
 {
+#if GOD_MODE
     if (Engine::GetKeyDown(KEY_1))
     {
         LaserPower* newPower = new LaserPower(400.0f, 400.0f);
@@ -204,6 +205,18 @@ void PowerManager::Update(float dt)
             m_fallingCapsules.push_back(newPower);
         }
     }
+
+    if (Engine::GetKeyDown(KEY_2))
+    {
+        DisruptPower* newPower = new DisruptPower(400.0f, 400.0f);
+        if (newPower)
+        {
+            newPower->SetDelegate(&OnActivateDistruptPower);
+            newPower->Init();
+            m_fallingCapsules.push_back(newPower);
+        }
+    }
+#endif
 
     Ship* ship = World::Get().GetShip();
     CHECK(ship);

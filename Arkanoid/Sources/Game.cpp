@@ -40,11 +40,27 @@ void Game::OnEnter()
     Engine::SetVolume(m_warpSfx, 40);
 
     m_PlayerDeathSfx = Engine::LoadSound("Assets/Audio/death.wav");
+
+    m_introTheme = Engine::LoadMusic("Assets/Audio/round.wav");
+    Engine::StopMusic();
+    Engine::PlayMusic(m_introTheme, 0);
+    m_PlayerStart = true;
+    m_playerStartElapsed = 0.0f;
+    m_ballMgr.Update(0.0f);
 }
 
 void Game::OnUpdate(float dt)
 {
-    if (m_levelEnded)
+    if (m_PlayerStart)
+    {
+        m_playerStartElapsed += dt;
+        if (m_playerStartElapsed >= 3)
+        {
+            m_playerStartElapsed = 0.0f;
+            m_PlayerStart = false;
+        }
+    }
+    else if (m_levelEnded)
     {
         m_levelEndElapsed += dt;
         if (m_levelEndElapsed >= 3.0f)
@@ -190,11 +206,11 @@ void Game::LoadUIElements(int Level)
 
 void Game::RenderUI()
 {
-    /// if (m_PlayerStart)
-    /// {
-    ///     Engine::DrawString("PLAYER 1", m_whiteFont, 300.f, 690.0f);
-    ///     Engine::DrawString("READY", m_whiteFont, 330.f, 760.0f);
-    /// }
+    if (m_PlayerStart)
+    {
+        Engine::DrawString("PLAYER 1", m_whiteFont, 300.f, 690.0f);
+        Engine::DrawString("READY", m_whiteFont, 330.f, 760.0f);
+    }
 
     Engine::DrawString("1UP", m_orangeFont, 805.0f, 210.0f);
     Engine::DrawString(std::to_string(SaveGame::score), m_whiteFont, 833.0f, 245.0f);

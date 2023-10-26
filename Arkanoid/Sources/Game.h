@@ -30,12 +30,14 @@ private:
     size_t m_lifeTexture;
     size_t m_warpSfx;
     size_t m_PlayerDeathSfx;
+    size_t m_introTheme = 0;
     bool m_warpDoorOpen;
     bool m_levelEnded;
     float m_levelEndElapsed;
     bool m_bottomReached;
     float m_bottomReachedElapsed;
-
+    bool m_PlayerStart;
+    float m_playerStartElapsed;
     Animation m_warpDoor;
 
     BallManager m_ballMgr;
@@ -55,5 +57,4 @@ private:
     void OnActivateCatchPower(const PowerEvent& powerEvent);
     void OnLaserShot(const LaserEvent& laserEvent);
     void LoadDoors();
-
 };
