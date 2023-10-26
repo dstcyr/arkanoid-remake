@@ -10,6 +10,7 @@ public:
     void Update(float dt);
     void Render();
     void Clear();
+    bool CheckCollisionWith(MovingObject& other);
 
 private:
     std::vector<Laser*> m_activateLasers;

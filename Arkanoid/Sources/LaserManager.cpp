@@ -68,3 +68,23 @@ void LaserManager::Clear()
 
     m_activateLasers.clear();
 }
+
+bool LaserManager::CheckCollisionWith(MovingObject& other)
+{
+    std::vector<Laser*>::iterator it = m_activateLasers.begin();
+    while (it != m_activateLasers.end())
+    {
+        Laser* current = *it;
+        if (current->CheckCollisionWith(other))
+        {
+            it = m_activateLasers.erase(it);
+            return true;
+        }
+        else
+        {
+            it++;
+        }
+    }
+
+    return false;
+}

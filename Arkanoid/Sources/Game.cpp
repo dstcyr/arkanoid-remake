@@ -104,6 +104,7 @@ void Game::OnUpdate(float dt)
             m_debrisMgr.Update(dt);
             m_ballMgr.Update(dt);
             m_debrisMgr.CheckCollisions(m_ballMgr);
+            m_debrisMgr.CheckCollisions(m_laserMgr);
 
             if (m_warpDoorOpen)
             {

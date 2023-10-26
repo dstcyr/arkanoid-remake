@@ -55,4 +55,5 @@ private:
     void OnActivateCatchPower(const PowerEvent& powerEvent);
     void OnLaserShot(const LaserEvent& laserEvent);
     void LoadDoors();
+
 };
