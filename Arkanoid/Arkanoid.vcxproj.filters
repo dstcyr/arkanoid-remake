@@ -12,9 +12,6 @@
     <ClCompile Include="Sources\Game.cpp">
       <Filter>States</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\World.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\Ball.cpp">
       <Filter>Game\Objects</Filter>
     </ClCompile>
@@ -72,6 +69,12 @@
     <ClCompile Include="Sources\CatchPower.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\DebrisManager.cpp">
+      <Filter>Game\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\World.cpp">
+      <Filter>Game\Levels</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="States">
@@ -101,9 +104,6 @@
     </ClInclude>
     <ClInclude Include="Sources\Game.h">
       <Filter>States</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\World.h">
-      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Ball.h">
       <Filter>Game\Objects</Filter>
@@ -161,6 +161,12 @@
     </ClInclude>
     <ClInclude Include="Sources\CatchPower.h">
       <Filter>Game\Powers</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\DebrisManager.h">
+      <Filter>Game\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\World.h">
+      <Filter>Game\Levels</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

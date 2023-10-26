@@ -69,7 +69,7 @@ const int GOLD_TILE = 10;
 #define MENU_MOCKUP 0
 
 
-
+#define GOD_MODE 0
 
 
 

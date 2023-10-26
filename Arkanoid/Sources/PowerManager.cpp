@@ -10,6 +10,7 @@
 #include "LaserPower.h"
 #include "BreakPower.h"
 #include "CatchPower.h"
+#include "Engine.h"
 
 bool PowerManager::IsCapsuleFalling() const
 {
@@ -78,25 +79,15 @@ void PowerManager::Spawn(float x, float y, bool warpDoor)
     //      4 = DisruptCapsule
     //      5 = LaserCapsule
     //      6 = DisruptCapsule
-    //static int mapSelectedToCapsule[] = {
-    //    ExpandPower::GetID(),
-    //    SlowPower::GetID(),
-    //    CatchPower::GetID(),
-    //    ExpandPower::GetID(),
-    //    DisruptPower::GetID(),
-    //    LaserPower::GetID(),
-    //    DisruptPower::GetID(),
-    //    -1
-    //};
     static int mapSelectedToCapsule[] = {
-        CatchPower::GetID(),
-        CatchPower::GetID(),
-        CatchPower::GetID(),
+        ExpandPower::GetID(),
+        SlowPower::GetID(),
         CatchPower::GetID(),
         ExpandPower::GetID(),
-        ExpandPower::GetID(),
-        ExpandPower::GetID(),
-        ExpandPower::GetID()
+        DisruptPower::GetID(),
+        LaserPower::GetID(),
+        DisruptPower::GetID(),
+        -1
     };
 
     // 0x07 represents the binary pattern 00000111
@@ -204,6 +195,16 @@ void PowerManager::Clear()
 
 void PowerManager::Update(float dt)
 {
+    if (Engine::GetKeyDown(KEY_1))
+    {
+        LaserPower* newPower = new LaserPower(400.0f, 400.0f);
+        if (newPower)
+        {
+            newPower->Init();
+            m_fallingCapsules.push_back(newPower);
+        }
+    }
+
     Ship* ship = World::Get().GetShip();
     CHECK(ship);
 

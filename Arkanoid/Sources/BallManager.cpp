@@ -97,8 +97,10 @@ void BallManager::Update(float dt)
             if (collisionBt == ECollisionBoundType::BOTTOM_COLLISION)
             {
                 OnBottomReached.Invoke<BallEvent>(pX, pY);
+#if !GOD_MODE
                 Remove(ball);
                 return;
+#endif
             }
         }
 
@@ -160,7 +162,7 @@ void BallManager::Render()
     }
 }
 
-void BallManager::Destroy()
+void BallManager::Clear()
 {
     for (Ball* ball : m_activeBalls)
     {
@@ -355,16 +357,6 @@ float BallManager::CheckCollisionWithGrid(float* px, float* py, Rect<float>& tra
     return false;
 }
 
-void BallManager::Clear()
-{
-    for (Ball* ball : m_activeBalls)
-    {
-        SAFE_DELETE(ball);
-    }
-
-    m_activeBalls.clear();
-}
-
 void BallManager::Remove(Ball* ball)
 {
     auto it = m_activeBalls.begin();
@@ -411,6 +403,45 @@ void BallManager::FirstBallOfTheRound()
     m_activeBalls.clear();
     m_firstBall = true;
     m_firstBallElapsed = 0.0f;
+}
+
+bool BallManager::CheckCollisionWith(MovingObject& other)
+{
+    for (Ball* ball : m_activeBalls)
+    {
+        if (ball->CheckCollisionWith(other))
+        {
+            Rect<float> otherTransform;
+            other.GetTransform(&otherTransform);
+
+            Vec2D velocity;
+            Rect<float> ballTransform;
+            float ballX, ballY;
+            ball->GetTransform(&ballTransform);
+            ballTransform.Center(&ballX, &ballY);
+            ball->GetVelocity(&velocity);
+
+            bool bottom = ballY > otherTransform.y + otherTransform.h;
+            bool top = ballY < otherTransform.y;
+            bool left = ballX < otherTransform.x;
+            bool right = ballX > otherTransform.x + otherTransform.w;
+
+            if (top ^ bottom)
+            {
+                velocity.CW();
+            }
+
+            if (left ^ right)
+            {
+                velocity.CCW();
+            }
+
+            ball->SetVelocity(velocity);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void BallManager::PlayHitShipSFX()

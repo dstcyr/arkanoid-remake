@@ -8,6 +8,7 @@
 #include "World.h"
 #include "Ship.h"
 #include "LaserManager.h"
+#include "DebrisManager.h"
 #include "Animation.h"
 
 class Game : public IState
@@ -40,6 +41,7 @@ private:
     BallManager m_ballMgr;
     PowerManager m_powerMgr;
     LaserManager m_laserMgr;
+    DebrisManager m_debrisMgr;
 
     void ChooseBackground(int level);
     void LoadUIElements(int level);

@@ -13,8 +13,13 @@ void Game::OnEnter()
     LoadUIElements(levelToLoad);
     LoadDoors();
 
-    World::Get().LoadLevel(levelToLoad);
+    if (!World::Get().IsLoaded())
+    {
+        World::Get().LoadLevel(levelToLoad);
+    }
+
     World::Get().OnBlockDestroyed.Bind(this, &Game::OnBlockDestroyed);
+    World::Get().AddShip();
     World::Get().GetShip()->OnLaserShotDelegate.Bind(this, &Game::OnLaserShot);
 
     m_ballMgr.Initialize();
@@ -27,6 +32,7 @@ void Game::OnEnter()
     m_powerMgr.OnActivateCatchPower.Bind(this, &Game::OnActivateCatchPower);
 
     m_laserMgr.Initialize();
+    m_debrisMgr.Initialize();
 
     m_levelEnded = false;
     m_bottomReached = false;
@@ -45,6 +51,8 @@ void Game::OnUpdate(float dt)
         {
             m_powerMgr.Clear();
             SaveGame::NextRound();
+            World::Get().Clear();
+
             if (SaveGame::round > LAST_LEVEL)
             {
                 Engine::SetState("menu");
@@ -93,7 +101,9 @@ void Game::OnUpdate(float dt)
         {
             m_powerMgr.Update(dt);
             m_laserMgr.Update(dt);
+            m_debrisMgr.Update(dt);
             m_ballMgr.Update(dt);
+            m_debrisMgr.CheckCollisions(m_ballMgr);
 
             if (m_warpDoorOpen)
             {
@@ -114,6 +124,7 @@ void Game::OnRender()
     m_ballMgr.Render();
     m_powerMgr.Render();
     m_laserMgr.Render();
+    m_debrisMgr.Render();
 
     // HACK: Hide the ship behind a black square when warping out of the level
     Engine::FillRect(807.0f, 827.0f, 100.0f, 100.0f, NColor(0, 0, 0, 255));
@@ -126,6 +137,7 @@ void Game::OnExit()
 
     World::Get().OnBlockDestroyed.Clear();
     World::Get().GetShip()->OnLaserShotDelegate.Clear();
+    World::Get().ClearShip();
 
     m_ballMgr.OnBottomReached.Clear();
 
@@ -133,8 +145,10 @@ void Game::OnExit()
     m_powerMgr.OnActivateDistruptPower.Clear();
     m_powerMgr.OnActivateBreakPower.Clear();
 
-    m_ballMgr.Destroy();
-    World::Get().Clear();
+    m_ballMgr.Clear();
+    m_debrisMgr.Clear();
+    m_laserMgr.Clear();
+    m_powerMgr.Clear();
 }
 
 void Game::OnWarpedOut()
@@ -210,6 +224,10 @@ void Game::OnBlockDestroyed(const BlockEvent& blockEvent)
 
 void Game::OnBottomReached(const BallEvent& ballEvent)
 {
+#if GOD_MODE
+    return;
+#endif
+
     m_bottomReached = true;
     m_bottomReachedElapsed = 0.0f;
     World::Get().KillShip();

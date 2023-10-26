@@ -32,6 +32,10 @@ public:
     int GetCellHeight() const;
     bool LevelCleared();
     void KillShip();
+    int GetDebrisTypeForCurrentLevel() const;
+    bool IsLoaded() const { return m_loaded; }
+    void ClearShip();
+    void AddShip();
 
     CDelegate OnBlockDestroyed;
 
@@ -44,6 +48,9 @@ private:
     int m_cellWidth = 0;
     int m_cellHeight = 0;
     int m_totalCell = 0;
+    int m_currentLevelDebris = 0;
+    bool m_loaded = false;
+
     Ship* m_ship = nullptr;
 
     World() = default;
@@ -55,6 +62,5 @@ private:
     void RenderGrid();
     int GetIndexFromPosition(int x, int y) const;
     void GetLocalPosition(int index, int width, int* outX, int* outY) const;
-    void AddShip();
     void ToWorld(const int localX, const int localY, float* worldX, float* worldY) const;
 };

@@ -37,6 +37,7 @@ void World::LoadLevel(int levelToLoad)
         m_height = mapElement->IntAttribute("height");
         m_cellWidth = mapElement->IntAttribute("tilewidth");
         m_cellHeight = mapElement->IntAttribute("tileheight");
+        m_currentLevelDebris = levelToLoad % 4;
         m_totalCell = m_width * m_height;
 
         XMLNode* layerNode = mapNode->FirstChild();
@@ -82,6 +83,7 @@ void World::LoadLevel(int levelToLoad)
     }
 
     AddShip();
+    m_loaded = true;
 }
 
 void World::Update(float dt)
@@ -117,6 +119,11 @@ void World::Clear()
     }
 
     m_gridData.clear();
+    m_loaded = false;
+}
+
+void World::ClearShip()
+{
     SAFE_DELETE(m_ship);
 }
 
@@ -146,6 +153,7 @@ bool World::LevelCleared()
         }
     }
 
+    m_loaded = false;
     return true;
 }
 
@@ -155,6 +163,11 @@ void World::KillShip()
     {
         m_ship->Die();
     }
+}
+
+int World::GetDebrisTypeForCurrentLevel() const
+{
+    return m_currentLevelDebris;
 }
 
 Ship* World::GetShip()

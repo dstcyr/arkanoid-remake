@@ -58,3 +58,13 @@ void LaserManager::Render()
         laser->Render();
     }
 }
+
+void LaserManager::Clear()
+{
+    for (Laser* laser : m_activateLasers)
+    {
+        SAFE_DELETE(laser);
+    }
+
+    m_activateLasers.clear();
+}

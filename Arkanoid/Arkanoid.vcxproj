@@ -159,6 +159,7 @@
     <ClCompile Include="Sources\BreakPower.cpp" />
     <ClCompile Include="Sources\CatchPower.cpp" />
     <ClCompile Include="Sources\Debris.cpp" />
+    <ClCompile Include="Sources\DebrisManager.cpp" />
     <ClCompile Include="Sources\DisruptPower.cpp" />
     <ClCompile Include="Sources\ExpandPower.cpp" />
     <ClCompile Include="Sources\Game.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="Sources\CatchPower.h" />
     <ClInclude Include="Sources\Config.h" />
     <ClInclude Include="Sources\Debris.h" />
+    <ClInclude Include="Sources\DebrisManager.h" />
     <ClInclude Include="Sources\DisruptPower.h" />
     <ClInclude Include="Sources\ExpandPower.h" />
     <ClInclude Include="Sources\Game.h" />

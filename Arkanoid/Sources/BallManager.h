@@ -34,13 +34,13 @@ public:
     void SpawnBall(int count = 1);
     void Update(float dt);
     void Render();
-    void Destroy();
     int Count();
     void SlowDown();
     void Clear();
     void Remove(Ball* ball);
     void CatchingBall(bool catching);
     void FirstBallOfTheRound();
+    bool CheckCollisionWith(MovingObject& other);
 
     CDelegate OnBottomReached;
 
