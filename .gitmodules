@@ -1,3 +1,6 @@
 [submodule "cengine"]
 	path = cengine
 	url = https://github.com/dstcyr/cengine.git
+[submodule "gamelib"]
+	path = gamelib
+	url = https://github.com/dstcyr/gamelib.git
