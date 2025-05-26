@@ -1,12 +1,8 @@
 #include "Ball.h"
-#include "Engine.h"
-#include "Log.h"
 #include "Ship.h"
 #include "World.h"
-#include "Collision.h"
-#include "Stopwatch.h"
 #include "Config.h"
-#include "MathUtils.h"
+#include "maths/MathUtils.h"
 
 Ball::Ball() : Ball(BALL_START_X, BALL_START_Y)
 {
@@ -16,13 +12,13 @@ Ball::Ball(float x, float y)
 {
     m_transform.x = x;
     m_transform.y = y;
-    m_transform.w = 16.0f;
-    m_transform.h = 16.0f;
+    m_transform.width = 16.0f;
+    m_transform.height = 16.0f;
 }
 
 void Ball::SetAngle(float angle)
 {
-    if (Engine::NearEqual(std::abs(angle), 0.0f) || Engine::NearEqual(std::abs(angle), 180.0f))
+    if (MathUtils::NearEqual(std::abs(angle), 0.0f) || MathUtils::NearEqual(std::abs(angle), 180.0f))
     {
         angle = -65.0f;
     }

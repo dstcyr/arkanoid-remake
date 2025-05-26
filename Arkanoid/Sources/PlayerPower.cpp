@@ -1,7 +1,6 @@
 #include "PlayerPower.h"
-#include "Log.h"
 #include "SaveGame.h"
-#include "Engine.h"
+#include "Game.h"
 
 PlayerPower::PlayerPower() 
 {
@@ -14,9 +13,11 @@ PlayerPower::PlayerPower(float x, float y) : Power(x, y)
 
 void PlayerPower::Init()
 {
+    auto& audio = Game::Get().Audio();
+
     Power::Init();
-    m_LifeSfx = Engine::LoadSound("Assets/Audio/life.wav");
-    Engine::SetVolume(m_LifeSfx, 30);
+    m_LifeSfx = audio.LoadAudio("Audio/life.wav");
+    audio.SetVolume(m_LifeSfx, 30);
 
     m_animation.AddClip("fall", 30, 6, 0.1f);
     m_animation.Play("fall", true);
@@ -24,8 +25,10 @@ void PlayerPower::Init()
 
 void PlayerPower::Activate()
 {
+    auto& audio = Game::Get().Audio();
+
     SaveGame::life++;
-    Engine::PlaySFX(m_LifeSfx);
+    audio.PlaySFX(m_LifeSfx);
 }
 
 std::string PlayerPower::ToString()

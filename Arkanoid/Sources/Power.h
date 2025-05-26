@@ -1,6 +1,6 @@
 #pragma once
 #include "MovingObject.h"
-#include "Animation.h"
+#include "graphics/Animation.h"
 #include "Delegate.h"
 
 class PowerEvent : public Event

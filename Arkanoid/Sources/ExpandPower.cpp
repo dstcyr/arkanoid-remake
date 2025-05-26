@@ -1,7 +1,7 @@
 #include "ExpandPower.h"
 #include "World.h"
 #include "Ship.h"
-#include "Log.h"
+#include "utils/Checks.h"
 
 ExpandPower::ExpandPower()
 {
@@ -21,14 +21,14 @@ void ExpandPower::Init()
 void ExpandPower::Activate()
 {
     Ship* ship = World::Get().GetShip();
-    CHECK(ship);
+    BX_CHECKS(ship, "Invalid ship");
     ship->ExpandShip();
 }
 
 void ExpandPower::Deactivate()
 {
     Ship* ship = World::Get().GetShip();
-    CHECK(ship);
+    BX_CHECKS(ship, "Invalid ship");
     ship->ContractShip();
 }
 

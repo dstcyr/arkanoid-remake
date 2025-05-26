@@ -1,16 +1,19 @@
 #include "LaserManager.h"
 #include "Config.h"
 #include "World.h"
-#include "Engine.h"
+#include "Game.h"
 
 void LaserManager::Initialize()
 {
-    m_LaserSfx = Engine::LoadSound("Assets/Audio/laser.wav");
-    Engine::SetVolume(m_LaserSfx, 50);
+    auto& audio = Game::Get().Audio();
+    m_LaserSfx = audio.LoadAudio("Audio/laser.wav");
+    audio.SetVolume(m_LaserSfx, 50);
 }
 
 void LaserManager::SpawnLaser(float x1, float y1, float x2, float y2)
 {
+    auto& audio = Game::Get().Audio();
+
     Laser* laserA = new Laser(x1, y1, LASER_SPEED);
     laserA->Initialize();
 
@@ -19,7 +22,7 @@ void LaserManager::SpawnLaser(float x1, float y1, float x2, float y2)
 
     m_activateLasers.push_back(laserA);
     m_activateLasers.push_back(laserB);
-    Engine::PlaySFX(m_LaserSfx);
+    audio.PlaySFX(m_LaserSfx);
 }
 
 void LaserManager::Update(float dt)

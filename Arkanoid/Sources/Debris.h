@@ -1,6 +1,6 @@
 #pragma once
 #include "MovingObject.h"
-#include "Animation.h"
+#include "graphics/Animation.h"
 #include "BallManager.h"
 
 class Debris : public MovingObject

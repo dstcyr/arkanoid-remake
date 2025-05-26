@@ -1,5 +1,4 @@
 #include "SlowPower.h"
-#include "Log.h"
 
 SlowPower::SlowPower()
 {

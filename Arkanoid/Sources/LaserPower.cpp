@@ -1,7 +1,7 @@
 #include "LaserPower.h"
 #include "World.h"
 #include "Ship.h"
-#include "Log.h"
+#include "utils/Checks.h"
 
 LaserPower::LaserPower()
 {
@@ -21,14 +21,14 @@ void LaserPower::Init()
 void LaserPower::Activate()
 {
     Ship* ship = World::Get().GetShip();
-    CHECK(ship);
+    BX_CHECKS(ship, "Invalid ship");
     ship->ActivateLaser();
 }
 
 void LaserPower::Deactivate()
 {
     Ship* ship = World::Get().GetShip();
-    CHECK(ship);
+    BX_CHECKS(ship, "Invalid ship");
     ship->DeactivateLaser();
 }
 

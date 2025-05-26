@@ -1,21 +1,22 @@
 #include "BallManager.h"
-#include "Log.h"
-#include "MathUtils.h"
 #include "World.h"
 #include "Ship.h"
-#include "Collision.h"
 #include "Stopwatch.h"
-#include "Engine.h"
+#include "Game.h"
+#include "utils/Checks.h"
 
 void BallManager::Initialize()
 {
-    m_ballTexture = Engine::LoadTexture("Assets/Images/Ball.png");
-    m_shipCollisionSfx = Engine::LoadSound("Assets/Audio/shiphit.wav");
-    Engine::SetVolume(m_shipCollisionSfx, 50);
-    m_blockCollisionSfx = Engine::LoadSound("Assets/Audio/blockhit.wav");
-    Engine::SetVolume(m_blockCollisionSfx, 50);
-    m_hardBlockCollisionSfx = Engine::LoadSound("Assets/Audio/hardblockhit.wav");
-    Engine::SetVolume(m_hardBlockCollisionSfx, 50);
+    auto& graphics = Game::Get().Graphics();
+    auto& audio = Game::Get().Audio();
+
+    m_ballTexture = graphics.LoadTexture("Images/Ball.png");
+    m_shipCollisionSfx = audio.LoadAudio("Audio/shiphit.wav");
+    audio.SetVolume(m_shipCollisionSfx, 50);
+    m_blockCollisionSfx = audio.LoadAudio("Audio/blockhit.wav");
+    audio.SetVolume(m_blockCollisionSfx, 50);
+    m_hardBlockCollisionSfx = audio.LoadAudio("Audio/hardblockhit.wav");
+    audio.SetVolume(m_hardBlockCollisionSfx, 50);
 
     m_catchingBalls = false;
     m_firstBall = false;
@@ -68,12 +69,12 @@ void BallManager::Update(float dt)
     ProcessInput();
 
     Rect<float> transform;
-    Vec2D velocity;
+    Vec2<float> velocity;
 
     Ship* ship = World::Get().GetShip();
     for (CatchInfo& info : m_caughtBalls)
     {
-        CHECK(ship);
+        BX_CHECKS(ship, "Invalid ship");
         info.ball->SetPosition(
             ship->GetX() - info.offsetX,
             ship->GetY() - info.offsetY
@@ -82,7 +83,7 @@ void BallManager::Update(float dt)
 
     for (Ball* ball : m_activeBalls)
     {
-        CHECK(ball);
+        BX_CHECKS(ball, "Invalid ball");
         ball->GetTransform(&transform);
         ball->GetVelocity(&velocity);
 
@@ -139,12 +140,14 @@ void BallManager::Update(float dt)
 
 void BallManager::Render()
 {
+    auto& graphics = Game::Get().Graphics();
+
     for (Ball* ball : m_activeBalls)
     {
-        CHECK(ball);
+        BX_CHECKS(ball, "invalid ball");
         Rect<float> transform;
         ball->GetTransform(&transform);
-        Engine::DrawTexture(m_ballTexture, transform);
+        graphics.DrawImage(m_ballTexture, transform, 255, 255, 255, 255);
 
 #if SHOW_BALL_DEBUG
         Engine::DrawLine(transform.x + transform.w / 2.0f, 0.0f, transform.x + transform.w / 2.0f, 1000.0f, NColor::LightLavender);
@@ -155,10 +158,10 @@ void BallManager::Render()
 
     for (CatchInfo& info : m_caughtBalls)
     {
-        CHECK(info.ball);
+        BX_CHECKS(info.ball, "invalid ball");
         Rect<float> transform;
         info.ball->GetTransform(&transform);
-        Engine::DrawTexture(m_ballTexture, transform);
+        graphics.DrawImage(m_ballTexture, transform, 255, 255, 255, 255);
     }
 }
 
@@ -187,20 +190,20 @@ void BallManager::SlowDown()
 
 void BallManager::SetGameSpeed(float speed)
 {
-    m_gameSpeed = Engine::Clamp(speed, 100.0f, GAME_SPEED);
+    m_gameSpeed = MathUtils::Clamp(speed, 100.0f, GAME_SPEED);
     for (Ball* ball : m_activeBalls)
     {
         ball->SetSpeed(m_gameSpeed);
     }
 }
 
-ECollisionBoundType BallManager::CheckCollisionWithBounds(float* px, float* py, Rect<float>& transform, Vec2D& velocity)
+ECollisionBoundType BallManager::CheckCollisionWithBounds(float* px, float* py, Rect<float>& transform, Vec2<float>& velocity)
 {
     ECollisionBoundType result = ECollisionBoundType::NO_COLLISION;
-    if (*px > RIGHT_WALL_X - transform.w)
+    if (*px > RIGHT_WALL_X - transform.width)
     {
         velocity.CCW();
-        *px = RIGHT_WALL_X - transform.w;
+        *px = RIGHT_WALL_X - transform.width;
         result = ECollisionBoundType::WALL_COLLISION;
     }
     else if (*px < LEFT_WALL_X)
@@ -210,10 +213,10 @@ ECollisionBoundType BallManager::CheckCollisionWithBounds(float* px, float* py, 
         result = ECollisionBoundType::WALL_COLLISION;
     }
 
-    if (*py > BOTTOM_WALL_Y - transform.h)
+    if (*py > BOTTOM_WALL_Y - transform.height)
     {
         velocity.CW();
-        *py = BOTTOM_WALL_Y - transform.h;
+        *py = BOTTOM_WALL_Y - transform.height;
         result = ECollisionBoundType::BOTTOM_COLLISION;
     }
     else if (*py < TOP_WALL_Y)
@@ -226,7 +229,7 @@ ECollisionBoundType BallManager::CheckCollisionWithBounds(float* px, float* py, 
     return result;
 }
 
-ECollisionResult BallManager::CheckCollisionWithShip(float* px, float* py, Ship* ship, Rect<float>& transform, Vec2D& velocity)
+ECollisionResult BallManager::CheckCollisionWithShip(float* px, float* py, Ship* ship, Rect<float>& transform, Vec2<float>& velocity)
 {
     // Where the ball hits the paddle dictates how it will bounce off the paddle.
     // If the ball hits the silver area in the middle, it will bounce off at a sharp angle.
@@ -239,10 +242,10 @@ ECollisionResult BallManager::CheckCollisionWithShip(float* px, float* py, Ship*
     // If the ball hit neer the middle of the ship, it's launched at 65°
     // If the ball hit near the extremities of the ship, it's launched at 45°
     // If the ball hit near the sides of the ship, it's launched at 20°
-    CHECK(ship);
+    BX_CHECKS(ship, "invalid ball");
 
-    float halfWidth = transform.w / 2.0f;
-    float halfHeight = transform.h / 2.0f;
+    float halfWidth = transform.width / 2.0f;
+    float halfHeight = transform.height / 2.0f;
     float centerX = transform.x + halfWidth;
     float centerY = transform.y + halfHeight;
 
@@ -287,11 +290,11 @@ ECollisionResult BallManager::CheckCollisionWithShip(float* px, float* py, Ship*
         Rect<float> m_shipTransform;
         ship->GetTransform(&m_shipTransform);
 
-        Vec2D dir = velocity.GetNormalized();
-        Rect<float> temp(*px, *py, transform.w, transform.h);
+        Vec2<float> dir = velocity.GetNormalized();
+        Rect<float> temp(*px, *py, transform.width, transform.height);
         float solveSpeed = 1.0f;
         int pass = 100;
-        while (Engine::CheckRects(temp, m_shipTransform) && pass > 0)
+        while (MathUtils::IsColliding(temp, m_shipTransform) && pass > 0)
         {
             temp.x += dir.x * solveSpeed;
             temp.y += dir.y * solveSpeed;
@@ -306,14 +309,14 @@ ECollisionResult BallManager::CheckCollisionWithShip(float* px, float* py, Ship*
     return response;
 }
 
-bool BallManager::CheckCollisionWithGrid(float* px, float* py, Rect<float>& transform, Vec2D& velocity)
+bool BallManager::CheckCollisionWithGrid(float* px, float* py, Rect<float>& transform, Vec2<float>& velocity)
 {
     int hitIndex = 0;
 
     // if there is a collision with blocks in the grid, this function
     // returns the closests id using the distance between both rectangle's
     // centers. The ball can hit only one target at a time:
-    if (World::Get().CheckCollision(*px, *py, transform.w, transform.h, &hitIndex))
+    if (World::Get().CheckCollision(*px, *py, transform.width, transform.height, &hitIndex))
     {
         *px = transform.x;
         *py = transform.y;
@@ -328,9 +331,9 @@ bool BallManager::CheckCollisionWithGrid(float* px, float* py, Rect<float>& tran
         int worldX, worldY;
         World::Get().GetWorldPositionFromIndex(hitIndex, &worldX, &worldY);
 
-        bool bottom = (worldY < transform.y + transform.h);
+        bool bottom = (worldY < transform.y + transform.height);
         bool top = (worldY + World::Get().GetCellHeight() > transform.y);
-        bool right = (worldX <= transform.x + transform.w);
+        bool right = (worldX <= transform.x + transform.width);
         bool left = (worldX + World::Get().GetCellWidth() > transform.x);
 
         // The ball hits the top but not the bottom or
@@ -389,7 +392,7 @@ void BallManager::FirstBallOfTheRound()
     SpawnBall(1);
 
     Ship* ship = World::Get().GetShip();
-    CHECK(ship);
+    BX_CHECKS(ship, "invalid ball");
 
     for (Ball* ball : m_activeBalls)
     {
@@ -414,17 +417,17 @@ bool BallManager::CheckCollisionWith(MovingObject& other)
             Rect<float> otherTransform;
             other.GetTransform(&otherTransform);
 
-            Vec2D velocity;
+            Vec2<float> velocity;
             Rect<float> ballTransform;
             float ballX, ballY;
             ball->GetTransform(&ballTransform);
-            ballTransform.Center(&ballX, &ballY);
+            ballTransform.GetCenter(&ballX, &ballY);
             ball->GetVelocity(&velocity);
 
-            bool bottom = ballY > otherTransform.y + otherTransform.h;
+            bool bottom = ballY > otherTransform.y + otherTransform.height;
             bool top = ballY < otherTransform.y;
             bool left = ballX < otherTransform.x;
-            bool right = ballX > otherTransform.x + otherTransform.w;
+            bool right = ballX > otherTransform.x + otherTransform.width;
 
             if (top ^ bottom)
             {
@@ -446,6 +449,8 @@ bool BallManager::CheckCollisionWith(MovingObject& other)
 
 void BallManager::PlayHitShipSFX()
 {
+    auto& audio = Game::Get().Audio();
+
     static CStopwatch hitSFXStopwatch;
     static bool firstTime = true;
 
@@ -453,19 +458,21 @@ void BallManager::PlayHitShipSFX()
     double elapsed = hitSFXStopwatch.ElapsedMilliseconds();
     if (elapsed > SFX_DELAY || firstTime)
     {
-        Engine::PlaySFX(m_shipCollisionSfx);
+        audio.PlaySFX(m_shipCollisionSfx);
         hitSFXStopwatch.Start();
         firstTime = false;
     }
     else
     {
-        LOG(LL_DEBUG, "Multi SFX prevented");
+        BX_LOG(ELogLevel::Log, "Multi SFX prevented");
     }
 }
 
 void BallManager::ProcessInput()
 {
-    if (Engine::GetKeyDown(KEY_A))
+    auto& input = Game::Get().Inputs();
+
+    if (input.IsKeyDown(EKey::EKEY_A))
     {
         if (m_caughtBalls.size() > 0)
         {
@@ -491,6 +498,8 @@ void BallManager::ForceLaunchCaughtBalls()
 
 void BallManager::PlayHitBlockSfx(int hit)
 {
+    auto& audio = Game::Get().Audio();
+
     static CStopwatch hitSFXStopwatch;
     static bool firstTime = true;
 
@@ -500,11 +509,11 @@ void BallManager::PlayHitBlockSfx(int hit)
     {
         if (hit > 0)
         {
-            Engine::PlaySFX(m_hardBlockCollisionSfx);
+            audio.PlaySFX(m_hardBlockCollisionSfx);
         }
         else
         {
-            Engine::PlaySFX(m_blockCollisionSfx);
+            audio.PlaySFX(m_blockCollisionSfx);
         }
 
         hitSFXStopwatch.Start();
@@ -512,6 +521,6 @@ void BallManager::PlayHitBlockSfx(int hit)
     }
     else
     {
-        LOG(LL_DEBUG, "Multi SFX prevented");
+        BX_LOG(ELogLevel::Log, "Multi SFX prevented");
     }
 }

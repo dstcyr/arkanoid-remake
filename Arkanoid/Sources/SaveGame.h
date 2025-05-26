@@ -1,5 +1,5 @@
 #pragma once
-#include "File.h"
+#include "save/BufferedFile.h"
 
 class SaveGame
 {
@@ -15,5 +15,5 @@ public:
     static void NextRound();
 
 private:
-    static CFile m_saveGameFile;
+    static BufferedFile m_saveGameFile;
 };

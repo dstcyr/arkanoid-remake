@@ -4,3 +4,6 @@
 [submodule "gamelib"]
 	path = gamelib
 	url = https://github.com/dstcyr/gamelib.git
+[submodule "game-library"]
+	path = game-library
+	url = https://github.com/dstcyr/game-library.git

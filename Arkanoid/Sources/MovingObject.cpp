@@ -1,9 +1,8 @@
 #include "MovingObject.h"
-#include "Collision.h"
 
 bool MovingObject::CheckCollisionWith(const MovingObject& other)
 {
-    return Engine::CheckRects(m_transform, other.m_transform);
+    return MathUtils::CheckRects(m_transform, other.m_transform);
 }
 
 void MovingObject::Stop()
@@ -28,12 +27,12 @@ void MovingObject::SetPosition(float x, float y)
     m_transform.y = y;
 }
 
-void MovingObject::GetVelocity(Vec2D* velocity)
+void MovingObject::GetVelocity(Vec2<float>* velocity)
 {
     *velocity = m_velocity;
 }
 
-void MovingObject::SetVelocity(Vec2D velocity)
+void MovingObject::SetVelocity(Vec2<float> velocity)
 {
     m_velocity.x = velocity.x;
     m_velocity.y = velocity.y;

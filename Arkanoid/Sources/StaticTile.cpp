@@ -1,10 +1,14 @@
 #include "StaticTile.h"
-#include "Engine.h"
+#include "maths/Rect.h"
 
+#include "Game.h"
 void StaticTile::Render(float x, float y, float w, float h)
 {
     if (tileType == EMPTY_TILE) return;
+
+    auto& graphics = Game::Get().Graphics();
+
     Rect<float> dst = { x, y, w, h };
-    Engine::DrawTexture(texture, source, dst, 0.0, false, false, NColor::White);
+    graphics.DrawImage(texture, source, dst, 0.0F, false, false, 255, 255, 255, 255);
 }
 

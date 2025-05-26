@@ -1,7 +1,7 @@
 #pragma once
 #include "Tile.h"
-#include "Rect.h"
 #include "Config.h"
+#include "maths/Rect.h"
 
 struct StaticTile final : public Tile
 {

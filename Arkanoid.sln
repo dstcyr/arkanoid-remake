@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Arkanoid", "Arkanoid\Arkanoid.vcxproj", "{D559D083-847A-4064-9BE2-D27DCF531962}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameLib", "gamelib\GameLib.vcxproj", "{9AB712D0-63AE-4549-96E8-90EFB22D9DE7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game-library", "game-library\game-library\game-library.vcxproj", "{CE269FBC-20D2-4D84-85ED-F1A4A3805790}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,14 +23,14 @@ Global
 		{D559D083-847A-4064-9BE2-D27DCF531962}.Release|x64.Build.0 = Release|x64
 		{D559D083-847A-4064-9BE2-D27DCF531962}.Release|x86.ActiveCfg = Release|Win32
 		{D559D083-847A-4064-9BE2-D27DCF531962}.Release|x86.Build.0 = Release|Win32
-		{9AB712D0-63AE-4549-96E8-90EFB22D9DE7}.Debug|x64.ActiveCfg = Debug|x64
-		{9AB712D0-63AE-4549-96E8-90EFB22D9DE7}.Debug|x64.Build.0 = Debug|x64
-		{9AB712D0-63AE-4549-96E8-90EFB22D9DE7}.Debug|x86.ActiveCfg = Debug|Win32
-		{9AB712D0-63AE-4549-96E8-90EFB22D9DE7}.Debug|x86.Build.0 = Debug|Win32
-		{9AB712D0-63AE-4549-96E8-90EFB22D9DE7}.Release|x64.ActiveCfg = Release|x64
-		{9AB712D0-63AE-4549-96E8-90EFB22D9DE7}.Release|x64.Build.0 = Release|x64
-		{9AB712D0-63AE-4549-96E8-90EFB22D9DE7}.Release|x86.ActiveCfg = Release|Win32
-		{9AB712D0-63AE-4549-96E8-90EFB22D9DE7}.Release|x86.Build.0 = Release|Win32
+		{CE269FBC-20D2-4D84-85ED-F1A4A3805790}.Debug|x64.ActiveCfg = Debug|x64
+		{CE269FBC-20D2-4D84-85ED-F1A4A3805790}.Debug|x64.Build.0 = Debug|x64
+		{CE269FBC-20D2-4D84-85ED-F1A4A3805790}.Debug|x86.ActiveCfg = Debug|Win32
+		{CE269FBC-20D2-4D84-85ED-F1A4A3805790}.Debug|x86.Build.0 = Debug|Win32
+		{CE269FBC-20D2-4D84-85ED-F1A4A3805790}.Release|x64.ActiveCfg = Release|x64
+		{CE269FBC-20D2-4D84-85ED-F1A4A3805790}.Release|x64.Build.0 = Release|x64
+		{CE269FBC-20D2-4D84-85ED-F1A4A3805790}.Release|x86.ActiveCfg = Release|Win32
+		{CE269FBC-20D2-4D84-85ED-F1A4A3805790}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,26 +1,28 @@
 #include "DebrisManager.h"
-#include "Engine.h"
+#include "Game.h"
 #include "Stopwatch.h"
 #include "World.h"
-#include "MathUtils.h"
-#include "Log.h"
+#include "maths/MathUtils.h"
 
 void DebrisManager::Initialize()
 {
-    m_DebrisExplosionSfx = Engine::LoadSound("Assets/Audio/explosion.wav");
-    Engine::SetVolume(m_DebrisExplosionSfx, 50);
+    auto& audio = Game::Get().Audio();
+
+    m_DebrisExplosionSfx = audio.LoadAudio("Audio/Explosion.wav");
+    audio.SetVolume(m_DebrisExplosionSfx, 50);
 
     m_spawnElapsed = 0.0f;
-    m_spawnCount = Engine::RandRange(1, 3);
-    m_spawnInGame = Engine::RandRange(1, m_spawnCount);
-    LOG(LL_WARNING, "Will spawn %d debris", m_spawnCount);
-    LOG(LL_WARNING, "Initial spawn is %d", m_spawnInGame);
+    m_spawnCount = MathUtils::RandRange(1, 3);
+    m_spawnInGame = MathUtils::RandRange(1, m_spawnCount);
+    // BX_LOG(ELogLevel::Warning, "Will spawn %d debris", m_spawnCount);
+    // BX_LOG(ELogLevel::Warning, "Initial spawn is %d", m_spawnInGame);
 
     Door topDoorA;
     topDoorA.anim = Animation();
     topDoorA.x = 225.0f;
     topDoorA.y = 10.0f;
-    topDoorA.anim.Init("Assets/Images/topdoor.png", 4, 48, 16);
+    topDoorA.anim.Load("Images/topdoor.png");
+    topDoorA.anim.Init(4, 48, 16);
     topDoorA.anim.AddClip("open", 0, 4, 0.1f);
     topDoorA.anim.AddClip("open_idle", 3, 1, 0.0f);
     topDoorA.anim.AddClip("close", 4, 4, 0.1f);
@@ -31,7 +33,8 @@ void DebrisManager::Initialize()
     topDoorB.anim = Animation();
     topDoorB.x = 575.0f;
     topDoorB.y = 10.0f;
-    topDoorB.anim.Init("Assets/Images/topdoor.png", 4, 48, 16);
+    topDoorB.anim.Load("Images/topdoor.png");
+    topDoorB.anim.Init(4, 48, 16);
     topDoorB.anim.AddClip("open", 0, 4, 0.1f);
     topDoorB.anim.AddClip("open_idle", 3, 1, 0.0f);
     topDoorB.anim.AddClip("close", 4, 4, 0.1f);
@@ -95,11 +98,11 @@ void DebrisManager::Render()
 
     for (Explosion& explosion : m_exposions)
     {
-        explosion.animation.Render(explosion.transform);
+        explosion.animation.Draw(explosion.transform);
     }
 
-    m_doors[0].anim.Render({201, 0, 98.0f, 34.0f});
-    m_doors[1].anim.Render({553, 0, 98.0f, 34.0f});
+    m_doors[0].anim.Draw({201, 0, 98.0f, 34.0f});
+    m_doors[1].anim.Draw({553, 0, 98.0f, 34.0f});
     // Engine::DrawCircle(m_doors[0].x, m_doors[0].y, 10.0f, NColor::Yellow);
     // Engine::DrawCircle(m_doors[1].x, m_doors[1].y, 10.0f, NColor::Red);
 }
@@ -113,12 +116,13 @@ void DebrisManager::CheckCollisions(BallManager& balls)
         {
             Explosion exp;
             exp.animation = Animation();
-            exp.animation.Init("Assets/Images/explosion.png", 5, 32, 32);
+            exp.animation.Load("Images/explosion.png");
+            exp.animation.Init(5, 32, 32);
             exp.animation.AddClip("play", 0, 5, 0.1f);
             exp.animation.Play("play", false);
             (*it)->GetTransform(&exp.transform);
-            exp.transform.w = 64.0f;
-            exp.transform.h = 64.0f;
+            exp.transform.width = 64.0f;
+            exp.transform.height = 64.0f;
             m_exposions.push_back(exp);
             PlayExplosionSFX();
 
@@ -140,12 +144,13 @@ void DebrisManager::CheckCollisions(LaserManager& lasers)
         {
             Explosion exp;
             exp.animation = Animation();
-            exp.animation.Init("Assets/Images/explosion.png", 5, 32, 32);
+            exp.animation.Load("Images/explosion.png");
+            exp.animation.Init(5, 32, 32);
             exp.animation.AddClip("play", 0, 5, 0.1f);
             exp.animation.Play("play", false);
             (*it)->GetTransform(&exp.transform);
-            exp.transform.w = 64.0f;
-            exp.transform.h = 64.0f;
+            exp.transform.width = 64.0f;
+            exp.transform.height = 64.0f;
             m_exposions.push_back(exp);
             PlayExplosionSFX();
 
@@ -160,6 +165,8 @@ void DebrisManager::CheckCollisions(LaserManager& lasers)
 
 void DebrisManager::PlayExplosionSFX()
 {
+    auto& audio = Game::Get().Audio();
+
     static CStopwatch hitSFXStopwatch;
     static bool firstTime = true;
 
@@ -167,7 +174,7 @@ void DebrisManager::PlayExplosionSFX()
     double elapsed = hitSFXStopwatch.ElapsedMilliseconds();
     if (elapsed > SFX_DELAY || firstTime)
     {
-        Engine::PlaySFX(m_DebrisExplosionSfx);
+        audio.PlaySFX(m_DebrisExplosionSfx);
         hitSFXStopwatch.Start();
         firstTime = false;
     }
@@ -175,7 +182,7 @@ void DebrisManager::PlayExplosionSFX()
 
 bool DebrisManager::TaskSpawnDebris(float dt, DebrisState* state)
 {
-    CHECK(state);
+    BX_CHECKS(state, "Invalid state");
 
     switch (state->phase)
     {

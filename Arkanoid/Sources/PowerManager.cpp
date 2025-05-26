@@ -1,5 +1,4 @@
 #include "PowerManager.h"
-#include "Log.h"
 #include "Config.h"
 #include "PlayerPower.h"
 #include "World.h"
@@ -10,7 +9,8 @@
 #include "LaserPower.h"
 #include "BreakPower.h"
 #include "CatchPower.h"
-#include "Engine.h"
+#include "Game.h"
+#include "utils/Checks.h"
 
 bool PowerManager::IsCapsuleFalling() const
 {
@@ -113,8 +113,8 @@ void PowerManager::Spawn(float x, float y, bool warpDoor)
         // ID 0 : Break
         case 0:
         {
-            LOG(LL_ERROR, "The code should have exited early if spawning a Break Power");
-            FAIL();
+            BX_LOG(ELogLevel::Error, "The code should have exited early if spawning a Break Power");
+            BX_FAIL("Fail");
         }
 
         // ID 1 : Catch 
@@ -152,8 +152,8 @@ void PowerManager::Spawn(float x, float y, bool warpDoor)
         // ID 5 : Player 
         case 5:
         {
-            LOG(LL_ERROR, "The code should have exited early if spawning a Player Power");
-            FAIL();
+            BX_LOG(ELogLevel::Error, "The code should have exited early if spawning a Player Power");
+            BX_FAIL("Fail");
         }
 
         // ID 6 : Laser 
@@ -219,7 +219,7 @@ void PowerManager::Update(float dt)
 #endif
 
     Ship* ship = World::Get().GetShip();
-    CHECK(ship);
+    BX_CHECKS(ship, "Invalid ship");
 
     auto it = m_fallingCapsules.begin();
     while (it != m_fallingCapsules.end())

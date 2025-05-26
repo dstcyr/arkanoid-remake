@@ -19,12 +19,13 @@ void Power::Update(float dt)
 
 void Power::Render()
 {
-    m_animation.Render(m_transform);
+    m_animation.Draw(m_transform);
 }
 
 void Power::Init()
 {
-    m_animation.Init("Assets/Images/capsules.png", 6, BLOCK_WIDTH, BLOCK_HEIGHT);
+    m_animation.Load("Images/capsules.png");
+    m_animation.Init(6, BLOCK_WIDTH, BLOCK_HEIGHT);
 }
 
 void Power::Activate()

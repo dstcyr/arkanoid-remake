@@ -1,9 +1,9 @@
 #pragma once
 #include "MovingObject.h"
 #include "Config.h"
+#include "graphics/Animation.h"
 #include "TaskManager.h"
 #include "Delegate.h"
-#include "Animation.h"
 
 class Ball;
 

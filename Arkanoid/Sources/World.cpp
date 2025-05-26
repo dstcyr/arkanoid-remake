@@ -1,16 +1,15 @@
 #include "World.h"
-#include "tinyxml2.h"
 #include <string>
 #include <sstream>
 #include "Tile.h"
 #include "AnimatedTile.h"
 #include "StaticTile.h"
-#include "Engine.h"
 #include "Ship.h"
-#include "Log.h"
-#include "Collision.h"
-#include "MathUtils.h"
+#include "maths/MathUtils.h"
+#include "utils/tinyxml2.h"
 #include "SaveGame.h"
+#include "utils/Checks.h"
+#include "Game.h"
 
 using namespace tinyxml2;
 
@@ -24,62 +23,74 @@ World& World::Get()
 
 void World::LoadLevel(int levelToLoad)
 {
-    std::string levelFilename = "Assets/Levels/Round" + std::to_string(levelToLoad + 1) + ".tmx";
+    std::string levelFilename = "Levels/Round" + std::to_string(levelToLoad + 1) + ".tmx";
 
-    XMLDocument doc;
-    if (doc.LoadFile(levelFilename.c_str()) == XML_SUCCESS)
+    auto& resMgr = Game::Get().Resources();
+    std::vector<char> levelData = resMgr.LoadData(levelFilename);
+    std::string levelDataStr;
+
+    if (!levelData.empty())
     {
-        XMLNode* mapNode = doc.FirstChild()->NextSibling();
-        XMLElement* mapElement = mapNode->ToElement();
-        m_offsetX = PLAYGROUND_OFFSET_X + GRID_OFFSET_X;
-        m_offsetY = GRID_OFFSET_Y;
-        m_width = mapElement->IntAttribute("width");
-        m_height = mapElement->IntAttribute("height");
-        m_cellWidth = mapElement->IntAttribute("tilewidth");
-        m_cellHeight = mapElement->IntAttribute("tileheight");
-        m_currentLevelDebris = levelToLoad % 4;
-        m_totalCell = m_width * m_height;
+        levelDataStr = std::string(levelData.begin(), levelData.end());
+    }
 
-        XMLNode* layerNode = mapNode->FirstChild();
-        while (layerNode)
+    tinyxml2::XMLDocument doc;
+    if (doc.Parse(levelDataStr.c_str()) != XML_SUCCESS)
+    {
+        BX_LOG(ELogLevel::Error, "Cannot load " + levelFilename);
+        return;
+    }
+
+    XMLNode* mapNode = doc.FirstChild()->NextSibling();
+    XMLElement* mapElement = mapNode->ToElement();
+    m_offsetX = PLAYGROUND_OFFSET_X + GRID_OFFSET_X;
+    m_offsetY = GRID_OFFSET_Y;
+    m_width = mapElement->IntAttribute("width");
+    m_height = mapElement->IntAttribute("height");
+    m_cellWidth = mapElement->IntAttribute("tilewidth");
+    m_cellHeight = mapElement->IntAttribute("tileheight");
+    m_currentLevelDebris = levelToLoad % 4;
+    m_totalCell = m_width * m_height;
+
+    XMLNode* layerNode = mapNode->FirstChild();
+    while (layerNode)
+    {
+        XMLElement* layerElement = layerNode->ToElement();
+        std::string valStr = layerElement->Value();
+        if (valStr == "layer")
         {
-            XMLElement* layerElement = layerNode->ToElement();
-            std::string valStr = layerElement->Value();
-            if (valStr == "layer")
-            {
-                XMLNode* dataNode = layerNode->FirstChild();
-                XMLElement* dataElement = dataNode->ToElement();
-                const char* data = dataElement->GetText();
+            XMLNode* dataNode = layerNode->FirstChild();
+            XMLElement* dataElement = dataNode->ToElement();
+            const char* data = dataElement->GetText();
 
-                std::string currentToken;
-                std::istringstream inputStream(data);
-                while (std::getline(inputStream, currentToken, ','))
+            std::string currentToken;
+            std::istringstream inputStream(data);
+            while (std::getline(inputStream, currentToken, ','))
+            {
+                if (!currentToken.empty())
                 {
-                    if (!currentToken.empty())
+                    int tileNum = std::stoul(currentToken);
+                    if (tileNum > 0 && tileNum <= 8)
                     {
-                        int tileNum = std::stoul(currentToken);
-                        if (tileNum > 0 && tileNum <= 8)
-                        {
-                            AddStaticTile(tileNum);
-                        }
-                        else if (tileNum == HARD_TILE)
-                        {
-                            AddSilverTile(levelToLoad);
-                        }
-                        else if (tileNum == GOLD_TILE)
-                        {
-                            AddGoldTile();
-                        }
-                        else
-                        {
-                            m_gridData.push_back(nullptr);
-                        }
+                        AddStaticTile(tileNum);
+                    }
+                    else if (tileNum == HARD_TILE)
+                    {
+                        AddSilverTile(levelToLoad);
+                    }
+                    else if (tileNum == GOLD_TILE)
+                    {
+                        AddGoldTile();
+                    }
+                    else
+                    {
+                        m_gridData.push_back(nullptr);
                     }
                 }
             }
-
-            layerNode = layerNode->NextSibling();
         }
+
+        layerNode = layerNode->NextSibling();
     }
 
     AddShip();
@@ -96,7 +107,7 @@ void World::Update(float dt)
         }
     }
 
-    CHECK(m_ship);
+    BX_CHECKS(m_ship, "Invalid ship");
     m_ship->Update(dt);
 }
 
@@ -104,7 +115,7 @@ void World::Render()
 {
     RenderGrid();
 
-    CHECK(m_ship);
+    BX_CHECKS(m_ship, "Invalid ship");
     m_ship->Render();
 }
 
@@ -254,9 +265,9 @@ bool World::CheckCollision(float x, float y, float w, float h, int* id) const
                 ToWorld(i, j, &worldX, &worldY);
                 float fW = static_cast<float>(m_cellWidth);
                 float fH = static_cast<float>(m_cellHeight);
-                if (Engine::CheckRects(x, y, w, h, worldX, worldY, fW, fH))
+                if (MathUtils::CheckRects(x, y, w, h, worldX, worldY, fW, fH))
                 {
-                    float distance = Engine::DistanceBetweenRectangles(x, y, w, h, worldX, worldY, fW, fH);
+                    float distance = MathUtils::DistanceBetweenRectangles(x, y, w, h, worldX, worldY, fW, fH);
                     if (distance < closestDistance)
                     {
                         closestDistance = distance;
@@ -291,6 +302,8 @@ int World::GetCellHeight() const
 
 void World::AddStaticTile(int tileType)
 {
+    auto& graphics = Game::Get().Graphics();
+
     // Color walls
     //     - white - 50
     //     - orange - 60
@@ -308,12 +321,12 @@ void World::AddStaticTile(int tileType)
 
     staticTile->source.x = x * BLOCK_WIDTH;
     staticTile->source.y = y * BLOCK_HEIGHT;
-    staticTile->source.w = BLOCK_WIDTH;
-    staticTile->source.h = BLOCK_HEIGHT;
+    staticTile->source.width = BLOCK_WIDTH;
+    staticTile->source.height = BLOCK_HEIGHT;
     staticTile->tileType = tileType;
     staticTile->hit = 1;
     staticTile->score = coloredBricksScore[dataid];
-    staticTile->texture = Engine::LoadTexture("Assets/Images/blocks.png");
+    staticTile->texture = graphics.LoadTexture("Images/blocks.png");
     m_gridData.push_back(staticTile);
 }
 
@@ -329,7 +342,7 @@ void World::AddSilverTile(int level)
     AnimatedTile* animTile = new AnimatedTile();
 
     int round = level + 1;
-    animTile->Init("Assets/Images/silver.png", 7, BLOCK_WIDTH, BLOCK_HEIGHT);
+    animTile->Init("Images/silver.png", 7, BLOCK_WIDTH, BLOCK_HEIGHT);
     animTile->tileType = HARD_TILE;
     animTile->hit = static_cast<int>(std::floor((round - 1) / 8) + 2);
     animTile->score = 50 * round;
@@ -341,7 +354,7 @@ void World::AddGoldTile()
     // Gold walls are indestructible.
     AnimatedTile* animTile = new AnimatedTile();
 
-    animTile->Init("Assets/Images/gold.png", 7, BLOCK_WIDTH, BLOCK_HEIGHT);
+    animTile->Init("Images/gold.png", 7, BLOCK_WIDTH, BLOCK_HEIGHT);
     animTile->tileType = GOLD_TILE;
     animTile->hit = 0;
     animTile->score = 0;

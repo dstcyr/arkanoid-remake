@@ -6,7 +6,7 @@ int SaveGame::life = STARTING_LIFE;
 int SaveGame::round = START_AT_ROUND;
 int SaveGame::score = 0;
 
-CFile SaveGame::m_saveGameFile;
+BufferedFile SaveGame::m_saveGameFile;
 
 void SaveGame::CheckHighScore()
 {
@@ -21,9 +21,9 @@ void SaveGame::CheckHighScore()
 void SaveGame::Save()
 {
     m_saveGameFile.Seek(0);
-    m_saveGameFile.WriteInt(highScore);
-    m_saveGameFile.Save("arkanoid.sav");
-    m_saveGameFile.Release();
+    m_saveGameFile.WriteInt32(highScore);
+    m_saveGameFile.WriteToDisk("arkanoid.sav");
+    m_saveGameFile.CloseBuffer();
 }
 
 void SaveGame::Load()
@@ -32,11 +32,11 @@ void SaveGame::Load()
     round = START_AT_ROUND;
     score = 0;
 
-    if (CFile::Exists("arkanoid.sav"))
+    if (BufferedFile::PeekVersion("arkanoid.sav") > 0)
     {
-        m_saveGameFile.Load("arkanoid.sav");
-        highScore = m_saveGameFile.ReadInt();
-        m_saveGameFile.Release();
+        m_saveGameFile.LoadFromDisk("arkanoid.sav");
+        m_saveGameFile.ReadInt32(&highScore);
+        m_saveGameFile.CloseBuffer();
     }
     else
     {

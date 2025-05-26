@@ -3,6 +3,7 @@
 #include "Ball.h"
 #include "Delegate.h"
 #include "Ship.h"
+#include "maths/Vec2.h"
 
 struct BallEvent : public Event
 {
@@ -59,9 +60,9 @@ private:
     float m_firstBallElapsed;
 
     void SetGameSpeed(float speed);
-    ECollisionBoundType CheckCollisionWithBounds(float* px, float* py, Rect<float>& transform, Vec2D& velocity);
-    ECollisionResult CheckCollisionWithShip(float* px, float* py, Ship* ship, Rect<float>& transform, Vec2D& velocity);
-    bool CheckCollisionWithGrid(float* px, float* py, Rect<float>& transform, Vec2D& velocity);
+    ECollisionBoundType CheckCollisionWithBounds(float* px, float* py, Rect<float>& transform, Vec2<float>& velocity);
+    ECollisionResult CheckCollisionWithShip(float* px, float* py, Ship* ship, Rect<float>& transform, Vec2<float>& velocity);
+    bool CheckCollisionWithGrid(float* px, float* py, Rect<float>& transform, Vec2<float>& velocity);
     void PlayHitBlockSfx(int hit);
     void PlayHitShipSFX();
     void ProcessInput();

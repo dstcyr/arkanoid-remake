@@ -1,14 +1,14 @@
 #pragma once
 #include "Config.h"
-#include "StateMachine.h"
+#include "screens/ScreenState.h"
 
-class Menu : public IState
+class Menu : public ScreenState
 {
 public:
-    void OnEnter() override;
-    void OnUpdate(float dt) override;
-    void OnRender() override;
-    void OnExit() override;
+    void Enter() override;
+    void Update(float dt) override;
+    void Draw() override;
+    void Exit() override;
 
 private:
     size_t m_whiteFont = 0;

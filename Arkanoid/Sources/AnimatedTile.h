@@ -1,7 +1,8 @@
 #pragma once
 #include "Tile.h"
-#include "Animation.h"
+#include "graphics/Animation.h"
 #include "Config.h"
+#include <string>
 
 struct AnimatedTile final : public Tile
 {

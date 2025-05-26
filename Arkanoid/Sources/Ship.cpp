@@ -1,8 +1,6 @@
 #include "Ship.h"
-#include "Engine.h"
 #include "Ball.h"
-#include "Log.h"
-#include "MathUtils.h"
+#include "maths/MathUtils.h"
 #include "Game.h"
 
 Ship::Ship() : Ship(SHIP_START_X, SHIP_START_Y)
@@ -13,8 +11,8 @@ Ship::Ship(float x, float y)
 {
     m_transform.x = x;
     m_transform.y = y;
-    m_transform.w = 128.0f;
-    m_transform.h = 32.0f;
+    m_transform.width = 128.0f;
+    m_transform.height = 32.0f;
     m_velocity.x = 800.0f;
     m_velocity.y = 0.0f;
     m_vausLeftPart = 0;
@@ -36,20 +34,24 @@ Ship::Ship(float x, float y)
 
 void Ship::Initialize()
 {
+    auto& graphics = Game::Get().Graphics();
+    auto& audio = Game::Get().Audio();
+
     m_sideWidth = 32.0f;
     m_middleWidth = 32.0f * 2.0f;
-    m_vausLeftPart = Engine::LoadTexture("Assets/Images/VausLeft.png");
-    m_vausRightPart = Engine::LoadTexture("Assets/Images/VausRight.png");
-    m_vausMiddlePart = Engine::LoadTexture("Assets/Images/VausMiddle.png");
-    m_laserLeftPart = Engine::LoadTexture("Assets/Images/laserLeft.png");
-    m_laserRightPart = Engine::LoadTexture("Assets/Images/laserRight.png");
-    m_laserMiddleLeftPart = Engine::LoadTexture("Assets/Images/laserMiddleLeft.png");
-    m_laserMiddleRightPart = Engine::LoadTexture("Assets/Images/laserMiddleRight.png");
-    m_expandSfx = Engine::LoadSound("Assets/Audio/expand.wav");
+    m_vausLeftPart = graphics.LoadTexture("Images/vausleft.png");
+    m_vausRightPart = graphics.LoadTexture("Images/VausRight.png");
+    m_vausMiddlePart = graphics.LoadTexture("Images/VausMiddle.png");
+    m_laserLeftPart = graphics.LoadTexture("Images/laserLeft.png");
+    m_laserRightPart = graphics.LoadTexture("Images/laserRight.png");
+    m_laserMiddleLeftPart = graphics.LoadTexture("Images/laserMiddleLeft.png");
+    m_laserMiddleRightPart = graphics.LoadTexture("Images/laserMiddleRight.png");
+    m_expandSfx = audio.LoadAudio("Audio/expand.wav");
     m_LaserActivated = false;
     m_Dead = false;
 
-    m_playerDeathAnim.Init("Assets/Images/death.png", 4, 512, 256);
+    m_playerDeathAnim.Load("Images/death.png");
+    m_playerDeathAnim.Init(4, 512, 256);
     m_playerDeathAnim.AddClip("death", 0, 4, 0.1f);
 }
 
@@ -76,7 +78,7 @@ void Ship::Render()
 {
     if (m_Dead)
     {
-        m_playerDeathAnim.Render({m_transform.x - 64, m_transform.y - 64, 256, 128});
+        m_playerDeathAnim.Draw({m_transform.x - 64, m_transform.y - 64, 256, 128});
     }
     else
     {
@@ -84,16 +86,16 @@ void Ship::Render()
         if (m_LaserActivated)
         {
 
-            RenderShipPart(m_laserLeftPart, m_transform.x + diff, m_transform.y, m_sideWidth, m_transform.h);
-            RenderShipPart(m_laserMiddleLeftPart, m_transform.x + 32.0f, m_transform.y, 32.0f, m_transform.h);
-            RenderShipPart(m_laserMiddleRightPart, m_transform.x + 32.0f + 32.0f, m_transform.y, 32.0f, m_transform.h);
-            RenderShipPart(m_laserRightPart, m_transform.x + 32.0f + m_middleWidth, m_transform.y, m_sideWidth, m_transform.h);
+            RenderShipPart(m_laserLeftPart, m_transform.x + diff, m_transform.y, m_sideWidth, m_transform.height);
+            RenderShipPart(m_laserMiddleLeftPart, m_transform.x + 32.0f, m_transform.y, 32.0f, m_transform.height);
+            RenderShipPart(m_laserMiddleRightPart, m_transform.x + 32.0f + 32.0f, m_transform.y, 32.0f, m_transform.height);
+            RenderShipPart(m_laserRightPart, m_transform.x + 32.0f + m_middleWidth, m_transform.y, m_sideWidth, m_transform.height);
         }
         else
         {
-            RenderShipPart(m_vausLeftPart, m_transform.x + diff, m_transform.y, m_sideWidth, m_transform.h);
-            RenderShipPart(m_vausMiddlePart, m_transform.x + 32.0f, m_transform.y, m_middleWidth, m_transform.h);
-            RenderShipPart(m_vausRightPart, m_transform.x + 32.0f + m_middleWidth, m_transform.y, m_sideWidth, m_transform.h);
+            RenderShipPart(m_vausLeftPart, m_transform.x + diff, m_transform.y, m_sideWidth, m_transform.height);
+            RenderShipPart(m_vausMiddlePart, m_transform.x + 32.0f, m_transform.y, m_middleWidth, m_transform.height);
+            RenderShipPart(m_vausRightPart, m_transform.x + 32.0f + m_middleWidth, m_transform.y, m_sideWidth, m_transform.height);
         }
 
 #if SHOW_PADDLE_DEBUG
@@ -122,7 +124,7 @@ ECollisionResult Ship::GetCollisionResponse(float x, float y)
     float leftZoneAStart, leftZoneAEnd, rightZoneAStart, rightZoneAEnd;
     GetZoneDelimiters(&leftZoneAStart, &leftZoneAEnd, &rightZoneAStart, &rightZoneAEnd);
 
-    float halfH = m_transform.h / 2.0f;
+    float halfH = m_transform.height / 2.0f;
     float topLimit = m_transform.y + halfH;
 
     if (y < topLimit)
@@ -152,11 +154,11 @@ ECollisionResult Ship::GetCollisionResponse(float x, float y)
     {
         if (x < m_transform.x)
         {
-            LOG(LL_ERROR, "TOO LOW LEFT");
+            BX_LOG(ELogLevel::Error, "TOO LOW LEFT");
             return ECollisionResult::LEFT_LOW_HIT;
         }
 
-        LOG(LL_ERROR, "TOO LOW RIGHT");
+        BX_LOG(ELogLevel::Error, "TOO LOW RIGHT");
         return ECollisionResult::RIGHT_LOW_HIT;
     }
 
@@ -165,12 +167,14 @@ ECollisionResult Ship::GetCollisionResponse(float x, float y)
 
 void Ship::UpdateControls(float dt, float* px)
 {
+    auto& inputs = Game::Get().Inputs();
+
     static bool movePressed = false;
     static float translationElapsed = 0.0f;
     static const float translationDelay = 0.0f;
     *px = m_transform.x;
 
-    if (Engine::GetKey(KEY_LEFT))
+    if (inputs.IsKeyDown(EKey::EKEY_LEFT))
     {
         if (!movePressed)
         {
@@ -188,7 +192,7 @@ void Ship::UpdateControls(float dt, float* px)
             }
         }
     }
-    else if (Engine::GetKey(KEY_RIGHT))
+    else if (inputs.IsKeyDown(EKey::EKEY_RIGHT))
     {
         if (!movePressed)
         {
@@ -214,30 +218,33 @@ void Ship::UpdateControls(float dt, float* px)
 
 void Ship::CheckCollisionWithBounds(float* px)
 {
+    auto& world = Game::Get().World();
+
     float rightLimit = RIGHT_WALL_X;
 
-    IState* currentState = Engine::GetTopState();
-    if (currentState)
-    {
-        Game* gameInstance = dynamic_cast<Game*>(currentState);
-        if (gameInstance && gameInstance->WarpDoorOpenned())
-        {
-            if (*px + 32.0f > RIGHT_WALL_X)
-            {
-                *px = SCREEN_WIDTH;
-                gameInstance->OnWarpedOut();
-            }
-        }
-        else if (*px > RIGHT_WALL_X - m_transform.w)
-        {
-            *px = RIGHT_WALL_X - m_transform.w;
-        }
-
-        if (*px < LEFT_WALL_X)
-        {
-            *px = LEFT_WALL_X;
-        }
-    }
+    // TODO (DaSt)
+    // IState* currentState = world.GetTopState();
+    // if (currentState)
+    // {
+    //     Game* gameInstance = dynamic_cast<Game*>(currentState);
+    //     if (gameInstance && gameInstance->WarpDoorOpenned())
+    //     {
+    //         if (*px + 32.0f > RIGHT_WALL_X)
+    //         {
+    //             *px = SCREEN_WIDTH;
+    //             gameInstance->OnWarpedOut();
+    //         }
+    //     }
+    //     else if (*px > RIGHT_WALL_X - m_transform.w)
+    //     {
+    //         *px = RIGHT_WALL_X - m_transform.w;
+    //     }
+    // 
+    //     if (*px < LEFT_WALL_X)
+    //     {
+    //         *px = LEFT_WALL_X;
+    //     }
+    // }
 }
 
 void Ship::GetZoneDelimiters(float* startA, float* endA, float* startB, float* endB)
@@ -250,11 +257,13 @@ void Ship::GetZoneDelimiters(float* startA, float* endA, float* startB, float* e
 
 bool Ship::TaskExpandShip(float dt, ShipState* state)
 {
+    auto& audio = Game::Get().Audio();
+
     static bool firstTime = true;
 
     if (state->firstPass)
     {
-        Engine::PlaySFX(m_expandSfx);
+        audio.PlaySFX(m_expandSfx);
         state->firstPass = false;
     }
 
@@ -264,16 +273,16 @@ bool Ship::TaskExpandShip(float dt, ShipState* state)
     {
         state->elapsed = 0.0f;
         m_transform.x -= 2.0f;
-        m_transform.w += 4.0f;
-        if (m_transform.w >= m_expandTargetWidth)
+        m_transform.width += 4.0f;
+        if (m_transform.width >= m_expandTargetWidth)
         {
-            m_transform.w = m_expandTargetWidth;
-            m_middleWidth = m_transform.w - 32.0f - 32.0f;
+            m_transform.width = m_expandTargetWidth;
+            m_middleWidth = m_transform.width - 32.0f - 32.0f;
             return false;
         }
     }
 
-    m_middleWidth = m_transform.w - 32.0f - 32.0f;
+    m_middleWidth = m_transform.width - 32.0f - 32.0f;
     return true;
 }
 
@@ -285,16 +294,16 @@ bool Ship::TaskContractShip(float dt, ShipState* state)
     {
         state->elapsed = 0.0f;
         m_transform.x += 2.0f;
-        m_transform.w -= 4.0f;
-        if (m_transform.w <= m_contractTargetWidth)
+        m_transform.width -= 4.0f;
+        if (m_transform.width <= m_contractTargetWidth)
         {
-            m_transform.w = m_contractTargetWidth;
-            m_middleWidth = m_transform.w - 32.0f - 32.0f;
+            m_transform.width = m_contractTargetWidth;
+            m_middleWidth = m_transform.width - 32.0f - 32.0f;
             return false;
         }
     }
 
-    m_middleWidth = m_transform.w - 32.0f - 32.0f;
+    m_middleWidth = m_transform.width - 32.0f - 32.0f;
     return true;
 }
 
@@ -309,7 +318,7 @@ bool Ship::TaskActivateLaser(float dt, ShipState* state)
         {
 
         case 0:
-            m_sideWidth = Engine::Clamp(m_sideWidth - 2.0f, 0.0f, SIDE_ZONE_WIDTH);
+            m_sideWidth = MathUtils::Clamp(m_sideWidth - 2.0f, 0.0f, SIDE_ZONE_WIDTH);
             if (m_sideWidth <= 0.0f)
             {
                 m_sideWidth = 0.0f;
@@ -319,7 +328,7 @@ bool Ship::TaskActivateLaser(float dt, ShipState* state)
             break;
 
         case 1:
-            m_sideWidth = Engine::Clamp(m_sideWidth + 2.0f, 0.0f, SIDE_ZONE_WIDTH);
+            m_sideWidth = MathUtils::Clamp(m_sideWidth + 2.0f, 0.0f, SIDE_ZONE_WIDTH);
             if (m_sideWidth >= SIDE_ZONE_WIDTH)
             {
                 m_sideWidth = SIDE_ZONE_WIDTH;
@@ -343,7 +352,7 @@ bool Ship::TaskDeactivateLaser(float dt, ShipState* state)
         {
 
         case 0:
-            m_sideWidth = Engine::Clamp(m_sideWidth - 2.0f, 0.0f, SIDE_ZONE_WIDTH);
+            m_sideWidth = MathUtils::Clamp(m_sideWidth - 2.0f, 0.0f, SIDE_ZONE_WIDTH);
             if (m_sideWidth <= 0.0f)
             {
                 m_sideWidth = 0.0f;
@@ -353,7 +362,7 @@ bool Ship::TaskDeactivateLaser(float dt, ShipState* state)
             break;
 
         case 1:
-            m_sideWidth = Engine::Clamp(m_sideWidth + 2.0f, 0.0f, SIDE_ZONE_WIDTH);
+            m_sideWidth = MathUtils::Clamp(m_sideWidth + 2.0f, 0.0f, SIDE_ZONE_WIDTH);
             if (m_sideWidth >= SIDE_ZONE_WIDTH)
             {
                 m_sideWidth = SIDE_ZONE_WIDTH;
@@ -368,12 +377,14 @@ bool Ship::TaskDeactivateLaser(float dt, ShipState* state)
 
 void Ship::ProcessShipInput()
 {
-    if (Engine::GetKeyDown(KEY_A))
+    auto& inputs = Game::Get().Inputs();
+
+    if (inputs.IsKeyDown(EKey::EKEY_A))
     {
         if (m_LaserActivated)
         {
             float leftSx = m_transform.x + (SIDE_ZONE_WIDTH / 2.0f) - (LASER_WIDTH / 2.0f);
-            float rightSx = m_transform.x + m_transform.w - SIDE_ZONE_WIDTH + (SIDE_ZONE_WIDTH / 2.0f) - (LASER_WIDTH / 2.0f);
+            float rightSx = m_transform.x + m_transform.width - SIDE_ZONE_WIDTH + (SIDE_ZONE_WIDTH / 2.0f) - (LASER_WIDTH / 2.0f);
             OnLaserShotDelegate.Invoke<LaserEvent>(leftSx, m_transform.y, rightSx, m_transform.y);
         }
         // else if (m_balls.size() > 0)
@@ -392,21 +403,23 @@ void Ship::ProcessShipInput()
 
 void Ship::RenderShipPart(size_t id, float x, float y, float w, float h)
 {
+    auto& graphics = Game::Get().Graphics();
+
     if (x < RIGHT_WALL_X)
     {
-        Engine::DrawTexture(id, x, y, w, h);
+        graphics.DrawImage(id, { x, y, w, h }, 255, 255, 255, 255);
     }
 }
 
 void Ship::ExpandShip()
 {
-    LOG(LL_DEBUG, "Expand ship");
+    BX_LOG(ELogLevel::Log, "Expand ship");
     m_sequence.Add(this, &Ship::TaskExpandShip);
 }
 
 void Ship::ContractShip()
 {
-    LOG(LL_DEBUG, "Contact ship");
+    BX_LOG(ELogLevel::Log, "Contact ship");
     m_sequence.Add(this, &Ship::TaskContractShip);
 }
 

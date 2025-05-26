@@ -9,7 +9,7 @@
     <ClCompile Include="Sources\Intro.cpp">
       <Filter>States</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Game.cpp">
+    <ClCompile Include="Sources\Gameplay.cpp">
       <Filter>States</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Ball.cpp">
@@ -75,6 +75,9 @@
     <ClCompile Include="Sources\World.cpp">
       <Filter>Game\Levels</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Delegate.cpp" />
+    <ClCompile Include="Sources\Stopwatch.cpp" />
+    <ClCompile Include="Sources\TaskManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="States">
@@ -102,7 +105,7 @@
     <ClInclude Include="Sources\Intro.h">
       <Filter>States</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Game.h">
+    <ClInclude Include="Sources\Gameplay.h">
       <Filter>States</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Ball.h">
@@ -168,5 +171,8 @@
     <ClInclude Include="Sources\World.h">
       <Filter>Game\Levels</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Delegate.h" />
+    <ClInclude Include="Sources\Stopwatch.h" />
+    <ClInclude Include="Sources\TaskManager.h" />
   </ItemGroup>
 </Project>

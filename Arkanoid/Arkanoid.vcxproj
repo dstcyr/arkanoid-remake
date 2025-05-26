@@ -92,7 +92,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)cengine/Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)game-library/game-library/Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -107,7 +107,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)cengine/Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)game-library/game-library/Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -122,14 +122,18 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)gamelib/Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)game-library/game-library/Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /D "$(SolutionDir)gamelib\Libs\*.dll" "$(TargetDir)"</Command>
+      <Command>xcopy /Y /D "$(SolutionDir)game-library\vendor\sdl2\lib\*.dll" "$(TargetDir)"
+xcopy /Y /D "$(SolutionDir)game-library\vendor\sdl2_image\lib\*.dll" "$(TargetDir)"
+xcopy /Y /D "$(SolutionDir)game-library\vendor\sdl2_mixer\lib\*.dll" "$(TargetDir)"
+xcopy /Y /D "$(SolutionDir)game-library\vendor\sdl2_mixer\dlls\*.dll" "$(TargetDir)"
+xcopy /Y /D "$(SolutionDir)game-library\vendor\sdl2_ttf\lib\*.dll" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -140,7 +144,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)gamelib/Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)game-library/game-library/Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -149,7 +153,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /D "$(SolutionDir)gamelib\Libs\*.dll" "$(TargetDir)"</Command>
+      <Command>xcopy /Y /D "$(SolutionDir)game-library\vendor\sdl2\lib\*.dll" "$(TargetDir)"
+xcopy /Y /D "$(SolutionDir)game-library\vendor\sdl2_image\lib\*.dll" "$(TargetDir)"
+xcopy /Y /D "$(SolutionDir)game-library\vendor\sdl2_mixer\lib\*.dll" "$(TargetDir)"
+xcopy /Y /D "$(SolutionDir)game-library\vendor\sdl2_mixer\dlls\*.dll" "$(TargetDir)"
+xcopy /Y /D "$(SolutionDir)game-library\vendor\sdl2_ttf\lib\*.dll" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -161,9 +169,10 @@
     <ClCompile Include="Sources\CatchPower.cpp" />
     <ClCompile Include="Sources\Debris.cpp" />
     <ClCompile Include="Sources\DebrisManager.cpp" />
+    <ClCompile Include="Sources\Delegate.cpp" />
     <ClCompile Include="Sources\DisruptPower.cpp" />
     <ClCompile Include="Sources\ExpandPower.cpp" />
-    <ClCompile Include="Sources\Game.cpp" />
+    <ClCompile Include="Sources\Gameplay.cpp" />
     <ClCompile Include="Sources\Intro.cpp" />
     <ClCompile Include="Sources\Laser.cpp" />
     <ClCompile Include="Sources\LaserManager.cpp" />
@@ -177,6 +186,8 @@
     <ClCompile Include="Sources\Ship.cpp" />
     <ClCompile Include="Sources\SlowPower.cpp" />
     <ClCompile Include="Sources\StaticTile.cpp" />
+    <ClCompile Include="Sources\Stopwatch.cpp" />
+    <ClCompile Include="Sources\TaskManager.cpp" />
     <ClCompile Include="Sources\Tile.cpp" />
     <ClCompile Include="Sources\World.cpp" />
   </ItemGroup>
@@ -189,9 +200,10 @@
     <ClInclude Include="Sources\Config.h" />
     <ClInclude Include="Sources\Debris.h" />
     <ClInclude Include="Sources\DebrisManager.h" />
+    <ClInclude Include="Sources\Delegate.h" />
     <ClInclude Include="Sources\DisruptPower.h" />
     <ClInclude Include="Sources\ExpandPower.h" />
-    <ClInclude Include="Sources\Game.h" />
+    <ClInclude Include="Sources\Gameplay.h" />
     <ClInclude Include="Sources\Intro.h" />
     <ClInclude Include="Sources\Laser.h" />
     <ClInclude Include="Sources\LaserManager.h" />
@@ -205,12 +217,14 @@
     <ClInclude Include="Sources\Ship.h" />
     <ClInclude Include="Sources\SlowPower.h" />
     <ClInclude Include="Sources\StaticTile.h" />
+    <ClInclude Include="Sources\Stopwatch.h" />
+    <ClInclude Include="Sources\TaskManager.h" />
     <ClInclude Include="Sources\Tile.h" />
     <ClInclude Include="Sources\World.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\gamelib\GameLib.vcxproj">
-      <Project>{9ab712d0-63ae-4549-96e8-90efb22d9de7}</Project>
+    <ProjectReference Include="..\game-library\game-library\game-library.vcxproj">
+      <Project>{ce269fbc-20d2-4d84-85ed-f1a4a3805790}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

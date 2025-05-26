@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
 #include "Debris.h"
-#include "Animation.h"
+#include "graphics/Animation.h"
 #include "TaskManager.h"
-#include "MathUtils.h"
+#include "maths/MathUtils.h"
 #include "LaserManager.h"
 
 struct Explosion
@@ -27,7 +27,7 @@ public:
         elapsed = 0.0f;
         phase = 0;
         firstPass = true;
-        door = Engine::RandRange(0, 1);
+        door = MathUtils::RandRange(0, 1);
     }
 
     float elapsed;
