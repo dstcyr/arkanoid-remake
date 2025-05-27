@@ -1,5 +1,5 @@
 #include "Debris.h"
-#include "World.h"
+#include "GameLevel.h"
 
 const float CIRCLE_LIMIT_Y = 550.0f;
 
@@ -79,7 +79,7 @@ void Debris::Update(float dt)
         bool canMoveDown = true;
 
         pY = m_transform.y + m_velocity.y * dt;
-        if ((World::Get().CheckCollision(pX, pY, m_transform.width, m_transform.height, &id)) || 
+        if ((GameLevel::Get().CheckCollision(pX, pY, m_transform.width, m_transform.height, &id)) || 
             (pX <= LEFT_WALL_X || pX >= RIGHT_WALL_X - m_transform.width) || (pY <= TOP_WALL_Y || pY >= BOTTOM_WALL_Y))
         {
             pY = m_transform.y;
@@ -89,7 +89,7 @@ void Debris::Update(float dt)
         if (!canMoveDown)
         {
             pX = m_transform.x + m_velocity.x * dt;
-            if ((World::Get().CheckCollision(pX, pY, m_transform.width, m_transform.height, &id)) ||
+            if ((GameLevel::Get().CheckCollision(pX, pY, m_transform.width, m_transform.height, &id)) ||
                 (pX <= LEFT_WALL_X || pX >= RIGHT_WALL_X - m_transform.width) || (pY <= TOP_WALL_Y || pY >= BOTTOM_WALL_Y))
             {
                 pX = m_transform.x;
@@ -114,14 +114,14 @@ void Debris::Update(float dt)
         float pX = m_transform.x + m_velocity.x * dt;
         float pY = m_transform.y;
 
-        if ((World::Get().CheckCollision(pX, m_transform.y, m_transform.width, m_transform.height, &id)) ||
+        if ((GameLevel::Get().CheckCollision(pX, m_transform.y, m_transform.width, m_transform.height, &id)) ||
             (pX <= LEFT_WALL_X || pX >= RIGHT_WALL_X - m_transform.width) || (pY <= TOP_WALL_Y || pY >= BOTTOM_WALL_Y))
         {
             pX = m_transform.x;
         }
 
         pY = m_transform.y + m_velocity.y * dt;
-        if ((World::Get().CheckCollision(pX, pY, m_transform.width, m_transform.height, &id)) ||
+        if ((GameLevel::Get().CheckCollision(pX, pY, m_transform.width, m_transform.height, &id)) ||
             (pX <= LEFT_WALL_X || pX >= RIGHT_WALL_X - m_transform.width) || (pY <= TOP_WALL_Y || pY >= BOTTOM_WALL_Y))
         {
             pY = m_transform.y;

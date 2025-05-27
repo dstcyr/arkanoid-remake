@@ -122,7 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)game-library/game-library/Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Includes;$(SolutionDir)game-library/game-library/Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,7 +144,7 @@ xcopy /Y /D "$(SolutionDir)game-library\vendor\sdl2_ttf\lib\*.dll" "$(TargetDir)
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)game-library/game-library/Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Includes;$(SolutionDir)game-library/game-library/Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -169,7 +169,6 @@ xcopy /Y /D "$(SolutionDir)game-library\vendor\sdl2_ttf\lib\*.dll" "$(TargetDir)
     <ClCompile Include="Sources\CatchPower.cpp" />
     <ClCompile Include="Sources\Debris.cpp" />
     <ClCompile Include="Sources\DebrisManager.cpp" />
-    <ClCompile Include="Sources\Delegate.cpp" />
     <ClCompile Include="Sources\DisruptPower.cpp" />
     <ClCompile Include="Sources\ExpandPower.cpp" />
     <ClCompile Include="Sources\Gameplay.cpp" />
@@ -186,41 +185,36 @@ xcopy /Y /D "$(SolutionDir)game-library\vendor\sdl2_ttf\lib\*.dll" "$(TargetDir)
     <ClCompile Include="Sources\Ship.cpp" />
     <ClCompile Include="Sources\SlowPower.cpp" />
     <ClCompile Include="Sources\StaticTile.cpp" />
-    <ClCompile Include="Sources\Stopwatch.cpp" />
-    <ClCompile Include="Sources\TaskManager.cpp" />
     <ClCompile Include="Sources\Tile.cpp" />
-    <ClCompile Include="Sources\World.cpp" />
+    <ClCompile Include="Sources\GameLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources\AnimatedTile.h" />
-    <ClInclude Include="Sources\Ball.h" />
-    <ClInclude Include="Sources\BallManager.h" />
-    <ClInclude Include="Sources\BreakPower.h" />
-    <ClInclude Include="Sources\CatchPower.h" />
-    <ClInclude Include="Sources\Config.h" />
-    <ClInclude Include="Sources\Debris.h" />
-    <ClInclude Include="Sources\DebrisManager.h" />
-    <ClInclude Include="Sources\Delegate.h" />
-    <ClInclude Include="Sources\DisruptPower.h" />
-    <ClInclude Include="Sources\ExpandPower.h" />
-    <ClInclude Include="Sources\Gameplay.h" />
-    <ClInclude Include="Sources\Intro.h" />
-    <ClInclude Include="Sources\Laser.h" />
-    <ClInclude Include="Sources\LaserManager.h" />
-    <ClInclude Include="Sources\LaserPower.h" />
-    <ClInclude Include="Sources\Menu.h" />
-    <ClInclude Include="Sources\MovingObject.h" />
-    <ClInclude Include="Sources\PlayerPower.h" />
-    <ClInclude Include="Sources\Power.h" />
-    <ClInclude Include="Sources\PowerManager.h" />
-    <ClInclude Include="Sources\SaveGame.h" />
-    <ClInclude Include="Sources\Ship.h" />
-    <ClInclude Include="Sources\SlowPower.h" />
-    <ClInclude Include="Sources\StaticTile.h" />
-    <ClInclude Include="Sources\Stopwatch.h" />
-    <ClInclude Include="Sources\TaskManager.h" />
-    <ClInclude Include="Sources\Tile.h" />
-    <ClInclude Include="Sources\World.h" />
+    <ClInclude Include="Includes\AnimatedTile.h" />
+    <ClInclude Include="Includes\Ball.h" />
+    <ClInclude Include="Includes\BallManager.h" />
+    <ClInclude Include="Includes\BreakPower.h" />
+    <ClInclude Include="Includes\CatchPower.h" />
+    <ClInclude Include="Includes\Config.h" />
+    <ClInclude Include="Includes\Debris.h" />
+    <ClInclude Include="Includes\DebrisManager.h" />
+    <ClInclude Include="Includes\DisruptPower.h" />
+    <ClInclude Include="Includes\ExpandPower.h" />
+    <ClInclude Include="Includes\Gameplay.h" />
+    <ClInclude Include="Includes\Intro.h" />
+    <ClInclude Include="Includes\Laser.h" />
+    <ClInclude Include="Includes\LaserManager.h" />
+    <ClInclude Include="Includes\LaserPower.h" />
+    <ClInclude Include="Includes\Menu.h" />
+    <ClInclude Include="Includes\MovingObject.h" />
+    <ClInclude Include="Includes\PlayerPower.h" />
+    <ClInclude Include="Includes\Power.h" />
+    <ClInclude Include="Includes\PowerManager.h" />
+    <ClInclude Include="Includes\SaveGame.h" />
+    <ClInclude Include="Includes\Ship.h" />
+    <ClInclude Include="Includes\SlowPower.h" />
+    <ClInclude Include="Includes\StaticTile.h" />
+    <ClInclude Include="Includes\Tile.h" />
+    <ClInclude Include="Includes\GameLevel.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\game-library\game-library\game-library.vcxproj">

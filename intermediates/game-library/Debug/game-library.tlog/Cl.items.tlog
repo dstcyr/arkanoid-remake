@@ -54,9 +54,12 @@ D:\Repos\arkanoid-remake\game-library\game-library\Sources\storyboard\StoryState
 D:\Repos\arkanoid-remake\game-library\game-library\Sources\storyboard\TimedTextboxEvent.cpp;D:\Repos\arkanoid-remake\intermediates\game-library\Debug\TimedTextboxEvent.obj
 D:\Repos\arkanoid-remake\game-library\game-library\Sources\storyboard\WaitEvent.cpp;D:\Repos\arkanoid-remake\intermediates\game-library\Debug\WaitEvent.obj
 D:\Repos\arkanoid-remake\game-library\game-library\Sources\storyboard\WaitStateEvent.cpp;D:\Repos\arkanoid-remake\intermediates\game-library\Debug\WaitStateEvent.obj
+D:\Repos\arkanoid-remake\game-library\game-library\Sources\utils\TaskManager.cpp;D:\Repos\arkanoid-remake\intermediates\game-library\Debug\TaskManager.obj
 D:\Repos\arkanoid-remake\game-library\game-library\Sources\triggers\Trigger.cpp;D:\Repos\arkanoid-remake\intermediates\game-library\Debug\Trigger.obj
 D:\Repos\arkanoid-remake\game-library\game-library\Sources\utils\Checks.cpp;D:\Repos\arkanoid-remake\intermediates\game-library\Debug\Checks.obj
+D:\Repos\arkanoid-remake\game-library\game-library\Sources\utils\Delegate.cpp;D:\Repos\arkanoid-remake\intermediates\game-library\Debug\Delegate.obj
 D:\Repos\arkanoid-remake\game-library\game-library\Sources\utils\StateStack.cpp;D:\Repos\arkanoid-remake\intermediates\game-library\Debug\StateStack.obj
 D:\Repos\arkanoid-remake\game-library\game-library\Sources\utils\StateStackCommands.cpp;D:\Repos\arkanoid-remake\intermediates\game-library\Debug\StateStackCommands.obj
+D:\Repos\arkanoid-remake\game-library\game-library\Sources\utils\Stopwatch.cpp;D:\Repos\arkanoid-remake\intermediates\game-library\Debug\Stopwatch.obj
 D:\Repos\arkanoid-remake\game-library\game-library\Sources\utils\tinyxml2.cpp;D:\Repos\arkanoid-remake\intermediates\game-library\Debug\tinyxml2.obj
 D:\Repos\arkanoid-remake\game-library\game-library\Sources\utils\Utils.cpp;D:\Repos\arkanoid-remake\intermediates\game-library\Debug\Utils.obj

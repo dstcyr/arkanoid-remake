@@ -20,6 +20,7 @@ void SaveGame::CheckHighScore()
 
 void SaveGame::Save()
 {
+    m_saveGameFile.CreateBuffer(sizeof(int) * 1);
     m_saveGameFile.Seek(0);
     m_saveGameFile.WriteInt32(highScore);
     m_saveGameFile.WriteToDisk("arkanoid.sav");

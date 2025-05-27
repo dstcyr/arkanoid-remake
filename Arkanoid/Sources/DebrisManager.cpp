@@ -1,7 +1,7 @@
 #include "DebrisManager.h"
 #include "Game.h"
-#include "Stopwatch.h"
-#include "World.h"
+#include "utils/Stopwatch.h"
+#include "GameLevel.h"
 #include "maths/MathUtils.h"
 
 void DebrisManager::Initialize()
@@ -167,7 +167,7 @@ void DebrisManager::PlayExplosionSFX()
 {
     auto& audio = Game::Get().Audio();
 
-    static CStopwatch hitSFXStopwatch;
+    static Stopwatch hitSFXStopwatch;
     static bool firstTime = true;
 
     hitSFXStopwatch.Stop();
@@ -209,7 +209,7 @@ bool DebrisManager::TaskSpawnDebris(float dt, DebrisState* state)
     case 2:
     {
         // Spawn the debris
-        Debris* newDebris = new Debris(World::Get().GetDebrisTypeForCurrentLevel());
+        Debris* newDebris = new Debris(GameLevel::Get().GetDebrisTypeForCurrentLevel());
         newDebris->Initialize();
         newDebris->SetPosition(m_doors[state->door].x, m_doors[state->door].y);
         m_activeDebris.push_back(newDebris);

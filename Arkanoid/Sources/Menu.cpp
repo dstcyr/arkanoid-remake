@@ -19,7 +19,7 @@ void Menu::Enter()
 #endif
 
     audio.StopMusic();
-    audio.PlayMusic(m_titleMusic);
+    audio.PlaySFX(m_titleMusic);
 }
 
 void Menu::Update(float dt)
@@ -42,7 +42,7 @@ void Menu::Draw()
     Engine::DrawTexture(m_menuMockup, 0.0f, 0.0f, NColor(255, 255, 255, 50));
 #endif
 
-    graphics.DrawImage(m_title, 260, 240, 494, 101);
+    graphics.DrawImage(m_title, { 260, 240, 494, 101 }, 255, 255, 255, 255);
     graphics.DrawString("HIGH SCORE", m_orangeFont, 350.0f, 30.0f, 255, 255, 255, 255);
     graphics.DrawString(std::to_string(SaveGame::highScore), m_whiteFont, 450.0f, 70.0f, 255, 255, 255, 255);
     graphics.DrawString("1UP", m_orangeFont, 140.0f, 30.0f, 255, 255, 255, 255);

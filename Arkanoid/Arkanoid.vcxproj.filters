@@ -72,12 +72,9 @@
     <ClCompile Include="Sources\DebrisManager.cpp">
       <Filter>Game\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\World.cpp">
+    <ClCompile Include="Sources\GameLevel.cpp">
       <Filter>Game\Levels</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Delegate.cpp" />
-    <ClCompile Include="Sources\Stopwatch.cpp" />
-    <ClCompile Include="Sources\TaskManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="States">
@@ -97,82 +94,79 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources\Config.h" />
-    <ClInclude Include="Sources\Menu.h">
+    <ClInclude Include="Includes\Config.h" />
+    <ClInclude Include="Includes\Menu.h">
       <Filter>States</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\SaveGame.h" />
-    <ClInclude Include="Sources\Intro.h">
+    <ClInclude Include="Includes\SaveGame.h" />
+    <ClInclude Include="Includes\Intro.h">
       <Filter>States</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Gameplay.h">
+    <ClInclude Include="Includes\Gameplay.h">
       <Filter>States</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Ball.h">
+    <ClInclude Include="Includes\Ball.h">
       <Filter>Game\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Debris.h">
+    <ClInclude Include="Includes\Debris.h">
       <Filter>Game\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Laser.h">
+    <ClInclude Include="Includes\Laser.h">
       <Filter>Game\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Ship.h">
+    <ClInclude Include="Includes\Ship.h">
       <Filter>Game\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Tile.h">
+    <ClInclude Include="Includes\Tile.h">
       <Filter>Game\Levels</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\StaticTile.h">
+    <ClInclude Include="Includes\StaticTile.h">
       <Filter>Game\Levels</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\AnimatedTile.h">
+    <ClInclude Include="Includes\AnimatedTile.h">
       <Filter>Game\Levels</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\PowerManager.h">
+    <ClInclude Include="Includes\PowerManager.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Power.h">
+    <ClInclude Include="Includes\Power.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\PlayerPower.h">
+    <ClInclude Include="Includes\PlayerPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\SlowPower.h">
+    <ClInclude Include="Includes\SlowPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\BallManager.h">
+    <ClInclude Include="Includes\BallManager.h">
       <Filter>Game\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\MovingObject.h">
+    <ClInclude Include="Includes\MovingObject.h">
       <Filter>Game\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\DisruptPower.h">
+    <ClInclude Include="Includes\DisruptPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\ExpandPower.h">
+    <ClInclude Include="Includes\ExpandPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\LaserPower.h">
+    <ClInclude Include="Includes\LaserPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\LaserManager.h">
+    <ClInclude Include="Includes\LaserManager.h">
       <Filter>Game\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\BreakPower.h">
+    <ClInclude Include="Includes\BreakPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\CatchPower.h">
+    <ClInclude Include="Includes\CatchPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\DebrisManager.h">
+    <ClInclude Include="Includes\DebrisManager.h">
       <Filter>Game\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\World.h">
+    <ClInclude Include="Includes\GameLevel.h">
       <Filter>Game\Levels</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Delegate.h" />
-    <ClInclude Include="Sources\Stopwatch.h" />
-    <ClInclude Include="Sources\TaskManager.h" />
   </ItemGroup>
 </Project>

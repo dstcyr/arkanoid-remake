@@ -1,9 +1,9 @@
 #include "Gameplay.h"
 #include "SaveGame.h"
-#include "World.h"
+#include "GameLevel.h"
 #include "Ship.h"
 #include "Game.h"
-#include "Delegate.h"
+#include "utils/Delegate.h"
 
 void Gameplay::Enter()
 {
@@ -12,14 +12,14 @@ void Gameplay::Enter()
     LoadUIElements(levelToLoad);
     LoadDoors();
 
-    if (!World::Get().IsLoaded())
+    if (!GameLevel::Get().IsLoaded())
     {
-        World::Get().LoadLevel(levelToLoad);
+        GameLevel::Get().LoadLevel(levelToLoad);
     }
 
-    World::Get().OnBlockDestroyed.Bind(this, &Gameplay::OnBlockDestroyed);
-    World::Get().AddShip();
-    World::Get().GetShip()->OnLaserShotDelegate.Bind(this, &Gameplay::OnLaserShot);
+    GameLevel::Get().OnBlockDestroyed.Bind(this, &Gameplay::OnBlockDestroyed);
+    GameLevel::Get().AddShip();
+    GameLevel::Get().GetShip()->OnLaserShotDelegate.Bind(this, &Gameplay::OnLaserShot);
 
     m_ballMgr.Initialize();
     m_ballMgr.OnBottomReached.Bind(this, &Gameplay::OnBottomReached);
@@ -71,7 +71,7 @@ void Gameplay::Update(float dt)
         {
             m_powerMgr.Clear();
             SaveGame::NextRound();
-            World::Get().Clear();
+            GameLevel::Get().Clear();
 
             if (SaveGame::round > LAST_LEVEL)
             {
@@ -85,7 +85,7 @@ void Gameplay::Update(float dt)
     }
     else if (m_bottomReached)
     {
-        World::Get().Update(dt);
+        GameLevel::Get().Update(dt);
 
         m_bottomReachedElapsed += dt;
         if (m_bottomReachedElapsed > 3)
@@ -111,8 +111,8 @@ void Gameplay::Update(float dt)
     }
     else
     {
-        World::Get().Update(dt);
-        if (World::Get().LevelCleared())
+        GameLevel::Get().Update(dt);
+        if (GameLevel::Get().LevelCleared())
         {
             m_levelEndElapsed = 0.0f;
             m_levelEnded = true;
@@ -143,7 +143,7 @@ void Gameplay::Draw()
 
     m_warpDoor.Draw({ 777.0f, 827.0f, 31.0f, 102.0f });
 
-    World::Get().Render();
+    GameLevel::Get().Render();
     m_ballMgr.Render();
     m_powerMgr.Render();
     m_laserMgr.Render();
@@ -158,9 +158,9 @@ void Gameplay::Exit()
 {
     m_warpDoorOpen = false;
 
-    World::Get().OnBlockDestroyed.Clear();
-    World::Get().GetShip()->OnLaserShotDelegate.Clear();
-    World::Get().ClearShip();
+    GameLevel::Get().OnBlockDestroyed.Clear();
+    GameLevel::Get().GetShip()->OnLaserShotDelegate.Clear();
+    GameLevel::Get().ClearShip();
 
     m_ballMgr.OnBottomReached.Clear();
 
@@ -265,7 +265,7 @@ void Gameplay::OnBottomReached(const BallEvent& ballEvent)
     {
         m_bottomReached = true;
         m_bottomReachedElapsed = 0.0f;
-        World::Get().KillShip();
+        GameLevel::Get().KillShip();
 
         audio.PlaySFX(m_PlayerDeathSfx);
     }

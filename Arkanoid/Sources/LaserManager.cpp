@@ -1,6 +1,6 @@
 #include "LaserManager.h"
 #include "Config.h"
-#include "World.h"
+#include "GameLevel.h"
 #include "Game.h"
 
 void LaserManager::Initialize()
@@ -34,13 +34,13 @@ void LaserManager::Update(float dt)
         current->Update(dt);
 
         int hitIndex;
-        bool collides = World::Get().CheckCollision(current->GetX(), current->GetY(), current->GetW(), current->GetH(), &hitIndex);
+        bool collides = GameLevel::Get().CheckCollision(current->GetX(), current->GetY(), current->GetW(), current->GetH(), &hitIndex);
         if (collides)
         {
 #if USE_SOUNDFX
                 Engine::PlaySFX(m_brickHitSound);
 #endif
-                World::Get().HitTile(hitIndex);
+                GameLevel::Get().HitTile(hitIndex);
         }
 
         if (current->GetY() < TOP_WALL_Y || collides)

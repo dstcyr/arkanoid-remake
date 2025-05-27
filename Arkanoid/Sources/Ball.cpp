@@ -1,6 +1,6 @@
 #include "Ball.h"
 #include "Ship.h"
-#include "World.h"
+#include "GameLevel.h"
 #include "Config.h"
 #include "maths/MathUtils.h"
 

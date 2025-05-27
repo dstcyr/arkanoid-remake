@@ -1,7 +1,7 @@
 #include "BallManager.h"
-#include "World.h"
+#include "GameLevel.h"
 #include "Ship.h"
-#include "Stopwatch.h"
+#include "utils/Stopwatch.h"
 #include "Game.h"
 #include "utils/Checks.h"
 
@@ -71,7 +71,7 @@ void BallManager::Update(float dt)
     Rect<float> transform;
     Vec2<float> velocity;
 
-    Ship* ship = World::Get().GetShip();
+    Ship* ship = GameLevel::Get().GetShip();
     for (CatchInfo& info : m_caughtBalls)
     {
         BX_CHECKS(ship, "Invalid ship");
@@ -316,7 +316,7 @@ bool BallManager::CheckCollisionWithGrid(float* px, float* py, Rect<float>& tran
     // if there is a collision with blocks in the grid, this function
     // returns the closests id using the distance between both rectangle's
     // centers. The ball can hit only one target at a time:
-    if (World::Get().CheckCollision(*px, *py, transform.width, transform.height, &hitIndex))
+    if (GameLevel::Get().CheckCollision(*px, *py, transform.width, transform.height, &hitIndex))
     {
         *px = transform.x;
         *py = transform.y;
@@ -325,16 +325,16 @@ bool BallManager::CheckCollisionWithGrid(float* px, float* py, Rect<float>& tran
         Engine::PlaySFX(m_brickHitSound);
 #endif
 
-        int hit = World::Get().HitTile(hitIndex);
+        int hit = GameLevel::Get().HitTile(hitIndex);
         PlayHitBlockSfx(hit);
 
         int worldX, worldY;
-        World::Get().GetWorldPositionFromIndex(hitIndex, &worldX, &worldY);
+        GameLevel::Get().GetWorldPositionFromIndex(hitIndex, &worldX, &worldY);
 
         bool bottom = (worldY < transform.y + transform.height);
-        bool top = (worldY + World::Get().GetCellHeight() > transform.y);
+        bool top = (worldY + GameLevel::Get().GetCellHeight() > transform.y);
         bool right = (worldX <= transform.x + transform.width);
-        bool left = (worldX + World::Get().GetCellWidth() > transform.x);
+        bool left = (worldX + GameLevel::Get().GetCellWidth() > transform.x);
 
         // The ball hits the top but not the bottom or
         // The ball hits the bottom but not the top (same goes for left and right)
@@ -391,7 +391,7 @@ void BallManager::FirstBallOfTheRound()
 {
     SpawnBall(1);
 
-    Ship* ship = World::Get().GetShip();
+    Ship* ship = GameLevel::Get().GetShip();
     BX_CHECKS(ship, "invalid ball");
 
     for (Ball* ball : m_activeBalls)
@@ -451,7 +451,7 @@ void BallManager::PlayHitShipSFX()
 {
     auto& audio = Game::Get().Audio();
 
-    static CStopwatch hitSFXStopwatch;
+    static Stopwatch hitSFXStopwatch;
     static bool firstTime = true;
 
     hitSFXStopwatch.Stop();
@@ -500,7 +500,7 @@ void BallManager::PlayHitBlockSfx(int hit)
 {
     auto& audio = Game::Get().Audio();
 
-    static CStopwatch hitSFXStopwatch;
+    static Stopwatch hitSFXStopwatch;
     static bool firstTime = true;
 
     hitSFXStopwatch.Stop();

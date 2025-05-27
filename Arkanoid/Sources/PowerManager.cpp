@@ -1,7 +1,7 @@
 #include "PowerManager.h"
 #include "Config.h"
 #include "PlayerPower.h"
-#include "World.h"
+#include "GameLevel.h"
 #include "Ship.h"
 #include "SlowPower.h"
 #include "DisruptPower.h"
@@ -218,7 +218,7 @@ void PowerManager::Update(float dt)
     }
 #endif
 
-    Ship* ship = World::Get().GetShip();
+    Ship* ship = GameLevel::Get().GetShip();
     BX_CHECKS(ship, "Invalid ship");
 
     auto it = m_fallingCapsules.begin();
