@@ -1,4 +1,4 @@
-#include "Menu.h"
+#include "Screens/Menu.h"
 #include "SaveGame.h"
 #include "Game.h"
 
@@ -53,5 +53,5 @@ void Menu::Draw()
 void Menu::Exit()
 {
     auto& audio = Game::Get().Audio();
-    audio.StopMusic();
+    audio.StopAllSounds();
 }

@@ -4,16 +4,16 @@
 #include <conio.h>
 #include <string>
 #include "Config.h"
-#include "Menu.h"
-#include "Intro.h"
+#include "Screens\Menu.h"
+#include "Screens\Intro.h"
+#include "Screens\Gameplay.h"
 #include "Game.h"
+#include "packer\Packer.h"
 
 #if CHECK_MEMORY_LEAKS
 #pragma comment(lib, "C:\\vld\\lib\\Win64\\vld.lib")
 #include "C:\\vld\\include\\vld.h"
 #endif
-#include "packer\Packer.h"
-#include "Gameplay.h"
 
 void RegisterStates();
 void RegisterControllers();
@@ -39,7 +39,7 @@ INT WINAPI WinMain(HINSTANCE _In_ hInst, HINSTANCE _In_opt_ hPrev, PSTR _In_ cmd
 #endif
 
     Game& tGame = Game::Get();
-    if (tGame.Initialize())
+    if (tGame.Initialize(title, SCREEN_WIDTH, SCREEN_HEIGHT))
     {
         RegisterStates();
         RegisterControllers();

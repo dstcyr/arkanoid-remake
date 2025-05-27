@@ -1,4 +1,4 @@
-#include "LaserPower.h"
+#include "Powers\LaserPower.h"
 #include "GameLevel.h"
 #include "Ship.h"
 #include "utils/Checks.h"

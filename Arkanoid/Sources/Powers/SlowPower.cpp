@@ -1,4 +1,4 @@
-#include "SlowPower.h"
+#include "Powers\SlowPower.h"
 
 SlowPower::SlowPower()
 {

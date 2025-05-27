@@ -1,14 +1,14 @@
 #include "PowerManager.h"
 #include "Config.h"
-#include "PlayerPower.h"
+#include "Powers\PlayerPower.h"
 #include "GameLevel.h"
 #include "Ship.h"
-#include "SlowPower.h"
-#include "DisruptPower.h"
-#include "ExpandPower.h"
-#include "LaserPower.h"
-#include "BreakPower.h"
-#include "CatchPower.h"
+#include "Powers\SlowPower.h"
+#include "Powers\DisruptPower.h"
+#include "Powers\ExpandPower.h"
+#include "Powers\LaserPower.h"
+#include "Powers\BreakPower.h"
+#include "Powers\CatchPower.h"
 #include "Game.h"
 #include "utils/Checks.h"
 
@@ -110,7 +110,7 @@ void PowerManager::Spawn(float x, float y, bool warpDoor)
         // 0 (break) and 5 (life) are already managed
         switch (capsuleToSpawn)
         {
-        // ID 0 : Break
+            // ID 0 : Break
         case 0:
         {
             BX_LOG(ELogLevel::Error, "The code should have exited early if spawning a Break Power");

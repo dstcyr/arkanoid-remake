@@ -2,14 +2,14 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Sources\Arkanoid.cpp" />
-    <ClCompile Include="Sources\Menu.cpp">
+    <ClCompile Include="Sources\Screens\Menu.cpp">
       <Filter>States</Filter>
     </ClCompile>
     <ClCompile Include="Sources\SaveGame.cpp" />
-    <ClCompile Include="Sources\Intro.cpp">
+    <ClCompile Include="Sources\Screens\Intro.cpp">
       <Filter>States</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Gameplay.cpp">
+    <ClCompile Include="Sources\Screens\Gameplay.cpp">
       <Filter>States</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Ball.cpp">
@@ -39,10 +39,10 @@
     <ClCompile Include="Sources\Power.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\PlayerPower.cpp">
+    <ClCompile Include="Sources\Powers\PlayerPower.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\SlowPower.cpp">
+    <ClCompile Include="Sources\Powers\SlowPower.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
     <ClCompile Include="Sources\BallManager.cpp">
@@ -51,22 +51,22 @@
     <ClCompile Include="Sources\MovingObject.cpp">
       <Filter>Game\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\DisruptPower.cpp">
+    <ClCompile Include="Sources\Powers\DisruptPower.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\ExpandPower.cpp">
+    <ClCompile Include="Sources\Powers\ExpandPower.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\LaserPower.cpp">
+    <ClCompile Include="Sources\Powers\LaserPower.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
     <ClCompile Include="Sources\LaserManager.cpp">
       <Filter>Game\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\BreakPower.cpp">
+    <ClCompile Include="Sources\Powers\BreakPower.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\CatchPower.cpp">
+    <ClCompile Include="Sources\Powers\CatchPower.cpp">
       <Filter>Game\Powers</Filter>
     </ClCompile>
     <ClCompile Include="Sources\DebrisManager.cpp">
@@ -95,14 +95,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Includes\Config.h" />
-    <ClInclude Include="Includes\Menu.h">
+    <ClInclude Include="Includes\Screens\Menu.h">
       <Filter>States</Filter>
     </ClInclude>
     <ClInclude Include="Includes\SaveGame.h" />
-    <ClInclude Include="Includes\Intro.h">
+    <ClInclude Include="Includes\Screens\Intro.h">
       <Filter>States</Filter>
     </ClInclude>
-    <ClInclude Include="Includes\Gameplay.h">
+    <ClInclude Include="Includes\Screens\Gameplay.h">
       <Filter>States</Filter>
     </ClInclude>
     <ClInclude Include="Includes\Ball.h">
@@ -132,10 +132,10 @@
     <ClInclude Include="Includes\Power.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
-    <ClInclude Include="Includes\PlayerPower.h">
+    <ClInclude Include="Includes\Powers\PlayerPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
-    <ClInclude Include="Includes\SlowPower.h">
+    <ClInclude Include="Includes\Powers\SlowPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
     <ClInclude Include="Includes\BallManager.h">
@@ -144,22 +144,22 @@
     <ClInclude Include="Includes\MovingObject.h">
       <Filter>Game\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Includes\DisruptPower.h">
+    <ClInclude Include="Includes\Powers\DisruptPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
-    <ClInclude Include="Includes\ExpandPower.h">
+    <ClInclude Include="Includes\Powers\ExpandPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
-    <ClInclude Include="Includes\LaserPower.h">
+    <ClInclude Include="Includes\Powers\LaserPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
     <ClInclude Include="Includes\LaserManager.h">
       <Filter>Game\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Includes\BreakPower.h">
+    <ClInclude Include="Includes\Powers\BreakPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
-    <ClInclude Include="Includes\CatchPower.h">
+    <ClInclude Include="Includes\Powers\CatchPower.h">
       <Filter>Game\Powers</Filter>
     </ClInclude>
     <ClInclude Include="Includes\DebrisManager.h">
